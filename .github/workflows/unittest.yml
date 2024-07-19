@@ -24,3 +24,4 @@ jobs:
             cd /work
             pip install -e .
             python -m pytest .
+            mypy libcoffee --explicit-package-bases
