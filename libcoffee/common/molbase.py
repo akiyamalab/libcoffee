@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 import numpy.typing as npt
 
-class MoleculeBase(metaclass=ABCMeta):
+class MolBase(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, mol): ...
 

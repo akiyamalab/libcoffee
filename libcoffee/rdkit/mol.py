@@ -1,17 +1,16 @@
 from typing import Any
-from libcoffee.common.molecule_base import MoleculeBase
+from libcoffee.common.molbase import MolBase
 import numpy as np
 import numpy.typing as npt
 from rdkit import Chem
-from rdkit.Chem import Mol, Atom
 
-class Molecule(MoleculeBase):
+class Mol(MolBase):
 
-    def __init__(self, mol: Mol):
+    def __init__(self, mol: Chem.Mol):
         self._mol = mol
 
     @property
-    def atoms(self) -> list[Atom]:
+    def atoms(self) -> list[Chem.Atom]:
         return [m for m in self._mol.GetAtoms()]
 
     @property

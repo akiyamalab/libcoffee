@@ -1,11 +1,11 @@
 from typing import Any
 from openbabel import pybel
-from libcoffee.common.molecule_base import MoleculeBase
+from libcoffee.common.molbase import MolBase
 from openbabel.openbabel import OBConversion
 import numpy as np
 import numpy.typing as npt
 
-class Molecule(MoleculeBase):
+class Molecule(MolBase):
 
     def __init__(self, mol: pybel.Molecule):
         self._mol = mol
