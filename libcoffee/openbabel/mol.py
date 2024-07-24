@@ -12,61 +12,47 @@ class Molecule(MolBase):
     """
 
     def __init__(self, mol: pybel.Molecule):
-        self._mol = mol
+        super().__init__(mol)
 
     @property
     def atoms(self) -> list[pybel.Atom]:
-        """
-        Returns a list of atoms in the molecule
-        """
-        return self._mol.atoms
+        return self.raw_mol.atoms
 
     @property
     def isotopes(self) -> npt.NDArray[np.int_]:
-        """
-        Returns a list of isotope numbers of atoms in the molecule
-        """
         return np.array([a.isotope for a in self.atoms], dtype=np.int_)
 
     @isotopes.setter
     def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
-        """
-        Sets the isotope numbers of atoms in the molecule
-        Now this method is not implemented
-        """
         if len(isotopes) != len(self.atoms):
             raise ValueError("Length of isotopes should be equal to the number of atoms")
         raise NotImplementedError
 
     @property
-    def name(self):
-        """
-        Returns the name of the molecule
-        """
-        return self._mol.title
+    def name(self) -> str:
+        return self.raw_mol.title
 
     @property
-    def coordinates(self) -> npt.NDArray[np.float_]:
-        return np.array([a.coords for a in self.atoms], dtype=np.float_)
+    def heavy_atom_indices(self) -> npt.NDArray[np.int_]:
+        unsorted_indices = list(set(np.where(np.array([a.atomicnum for a in self.raw_mol.atoms]) > 1)[0]))
+        return np.array(sorted(unsorted_indices), dtype=np.int_)
+
+    def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
+        coords = np.array([a.coords for a in self.raw_mol.atoms])
+        if only_heavy_atom:
+            coords = coords[self.heavy_atom_indices]
+        return coords
+
 
     def get_smiles(self, kekulize: bool = False) -> str:
-        """
-        Returns the SMILES representation of the molecule
-        """
         obConversion = OBConversion()
         obConversion.SetOutFormat("can")
         if kekulize:
             obConversion.SetOptions("k", obConversion.OUTOPTIONS)
-        return obConversion.WriteString(self._mol.OBMol).split()[0]
+        return obConversion.WriteString(self.raw_mol.OBMol).split()[0]
 
     def get_attr(self, attr_name: str) -> Any:
-        """
-        Returns the value of the attribute with the given name
-        """
-        return self._mol.data[attr_name]
+        return self.raw_mol.data[attr_name]
 
     def has_attr(self, attr_name: str) -> bool:
-        """
-        Returns True if the molecule has an attribute with the given name
-        """
-        return attr_name in self._mol.data
+        return attr_name in self.raw_mol.data
