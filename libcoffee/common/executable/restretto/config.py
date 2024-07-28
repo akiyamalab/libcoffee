@@ -7,16 +7,16 @@ from pathlib import Path
 
 @dataclass
 class REstrettoConfig:
-    innerbox: npt.NDArray[np.float64] = field(default_factory=lambda: np.array([0, 0, 0], dtype=np.float64))
-    outerbox: npt.NDArray[np.float64] = field(default_factory=lambda: np.array([0, 0, 0], dtype=np.float64))
-    box_center: npt.NDArray[np.float64] = field(default_factory=lambda: np.array([0, 0, 0], dtype=np.float64))
+    innerbox: npt.NDArray[np.int_] = field(default_factory=lambda: np.array([10, 10, 10], dtype=np.int_))
+    outerbox: npt.NDArray[np.int_] = field(default_factory=lambda: np.array([20, 20, 20], dtype=np.int_))
+    box_center: npt.NDArray[np.float_] = field(default_factory=lambda: np.array([0, 0, 0], dtype=np.float_))
     receptor: Path = Path()
     ligands: list[Path] = field(default_factory=list)
     output: Path = Path()
 
-    search_pitch: npt.NDArray[np.float64] = field(default_factory=lambda: np.array([1.0, 1.0, 1.0], dtype=np.float64))
-    scoring_pitch: npt.NDArray[np.float64] = field(
-        default_factory=lambda: np.array([0.25, 0.25, 0.25], dtype=np.float64)
+    search_pitch: npt.NDArray[np.float_] = field(default_factory=lambda: np.array([1.0, 1.0, 1.0], dtype=np.float_))
+    scoring_pitch: npt.NDArray[np.float_] = field(
+        default_factory=lambda: np.array([0.25, 0.25, 0.25], dtype=np.float_)
     )
     memory_size: int = 8000
     grid_folder: Path | None = None
@@ -29,7 +29,7 @@ class REstrettoConfig:
     poses_per_lig_before_opt: int = 2000
     log: Path | None = None
 
-    def dump(self) -> str:
+    def __str__(self) -> str:
         if self.grid_folder is None:
             self.grid_folder = Path(tempfile.mkdtemp())
         ret: list[str] = []
@@ -64,9 +64,9 @@ class REstrettoConfig:
                     continue
                 k, v = line.split(maxsplit=1)
                 if k == "INNERBOX":
-                    ret.innerbox = np.array([float(elem) for elem in v.split(",")])
+                    ret.innerbox = np.array([int(elem) for elem in v.split(",")])
                 elif k == "OUTERBOX":
-                    ret.outerbox = np.array([float(elem) for elem in v.split(",")])
+                    ret.outerbox = np.array([int(elem) for elem in v.split(",")])
                 elif k == "BOX_CENTER":
                     ret.box_center = np.array([float(elem) for elem in v.split(",")])
                 elif k == "SEARCH_PITCH":
