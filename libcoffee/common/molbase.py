@@ -119,6 +119,18 @@ class MolBase(ABC):
         """
         pass
 
+    def split(self) -> tuple:
+        """
+        Splits the molecule into fragments based on isotopes information 
+        and returns the fragment molecules
+        """
+        frag_idxs = np.unique(self.isotopes)
+        frags = []
+        for idx in frag_idxs:
+            atom_idxs = np.where(self.isotopes == idx)[0]
+            frags.append(self.extract_submol(atom_idxs))
+        return tuple(frags)        
+
     @classmethod
     @abstractmethod
     def read_sdf(cls, file_path: Path) -> tuple:
