@@ -55,10 +55,13 @@ class Mol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
-    def extract_submol(self, atom_idxs: list[int]) -> "MolBase":
+    def extract_submol(self, atom_idxs: list[int]) -> "Mol":
         rw_mol = Chem.RWMol(self.raw_mol)
         idx_remove_atoms = set(range(self.raw_mol.GetNumAtoms())) - set(atom_idxs)
         atomidxs = sorted(idx_remove_atoms)[::-1]
         for idx in atomidxs:
             rw_mol.RemoveAtom(idx)
         return Mol(rw_mol.GetMol()) # type: ignore  # Argument of GetMol() is not needed
+
+    def merge(self, mol: "Mol") -> "Mol":
+        raise NotImplementedError

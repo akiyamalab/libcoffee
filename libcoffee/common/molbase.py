@@ -107,3 +107,11 @@ class MolBase(ABC):
         If only_heavy_atom is True, return the center of heavy atoms only.
         """
         return np.mean(self.get_coordinates(only_heavy_atom), axis=0)
+
+    @abstractmethod
+    def merge(self, mol):
+        """
+        Merges the current molecule with another molecule.
+        Isotope numbers of atoms in the given molecule are updated to avoid conflicts.
+        """
+        pass

@@ -6,7 +6,7 @@ import numpy as np
 import numpy.typing as npt
 
 
-class Molecule(MolBase):
+class Mol(MolBase):
     """
     openbabel.pybel.Molecule wrapper class
     """
@@ -58,4 +58,7 @@ class Molecule(MolBase):
         return attr_name in self.raw_mol.data
 
     def extract_submol(self, atom_idxs: list[int]) -> "MolBase":
+        raise NotImplementedError
+
+    def merge(self, mol: "Mol") -> "Mol":
         raise NotImplementedError
