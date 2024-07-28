@@ -16,20 +16,20 @@ class Mol(MolBase):
 
 
     @property
-    def __atoms(self) -> tuple[Chem.Atom, ...]:
-        return (m for m in self._mol.GetAtoms())
+    def _atoms(self) -> tuple[Chem.Atom, ...]:
+        return tuple(m for m in self._mol.GetAtoms())
 
     @property
     def isotopes(self) -> npt.NDArray[np.int_]:
         # a.GetIsotope() should return int but typing says return Any
-        return np.array([a.GetIsotope() for a in self.__atoms], dtype=np.int_) # type: ignore  # Argument is not needed for GetIsotope()
+        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int_) # type: ignore  # Argument is not needed for GetIsotope()
 
     @isotopes.setter
     def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
-        if len(isotopes) != len(self.__atoms):
+        if len(isotopes) != len(self._atoms):
             raise ValueError("Length of isotopes should be equal to the number of atoms")
-        for i in range(len(self.__atoms)):
-            self.__atoms[i].SetIsotope(isotopes[i])
+        for i in range(len(self._atoms)):
+            self._atoms[i].SetIsotope(int(isotopes[i]))
 
     @property
     def name(self) -> str:
@@ -37,7 +37,7 @@ class Mol(MolBase):
 
     @property
     def heavy_atom_indices(self) -> npt.NDArray[np.int_]:
-        atomic_nums = [a.GetAtomicNum() for a in self.__atoms]
+        atomic_nums = [a.GetAtomicNum() for a in self._atoms]
         return np.where(np.array(atomic_nums) > 1)[0]
 
     def get_smiles(self, kekulize: bool = False) -> str:

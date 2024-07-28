@@ -25,7 +25,7 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def __atoms(self) -> tuple:
+    def _atoms(self) -> tuple:
         """
         Returns a list of atoms in the molecule.
         This method should be private method because output is not consistent between RDKit and OpenBabel.

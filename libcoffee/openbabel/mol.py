@@ -17,16 +17,16 @@ class Mol(MolBase):
         super().__init__(mol)
 
     @property
-    def __atoms(self) -> tuple[pybel.Atom, ...]:
+    def _atoms(self) -> tuple[pybel.Atom, ...]:
         return tuple(self.raw_mol.atoms)
 
     @property
     def isotopes(self) -> npt.NDArray[np.int_]:
-        return np.array([a.isotope for a in self.__atoms], dtype=np.int_)
+        return np.array([a.isotope for a in self._atoms], dtype=np.int_)
 
     @isotopes.setter
     def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
-        if len(isotopes) != len(self.__atoms):
+        if len(isotopes) != len(self._atoms):
             raise ValueError("Length of isotopes should be equal to the number of atoms")
         raise NotImplementedError
 
@@ -63,7 +63,7 @@ class Mol(MolBase):
         raise NotImplementedError
 
     def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":
-        natoms = len(self.__atoms)
+        natoms = len(self._atoms)
         ret = combine_two_mols(self.raw_mol, mol.raw_mol)
         if aps is not None:
             ap1, ap2 = aps
