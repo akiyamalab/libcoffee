@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 from libcoffee.common.molbase import MolBase
 import numpy as np
@@ -65,3 +66,8 @@ class Mol(MolBase):
 
     def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":
         raise NotImplementedError
+
+    @classmethod
+    def read_sdf(cls, file_path: Path) -> tuple["Mol", ...]:
+        suppl = Chem.SDMolSupplier(str(file_path))
+        return tuple(Mol(m) for m in suppl if m is not None)

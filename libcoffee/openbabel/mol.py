@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 from openbabel import pybel
 from libcoffee.common.molbase import MolBase
@@ -69,3 +70,11 @@ class Mol(MolBase):
             ap1, ap2 = ap1 + 1, ap2 + natoms + 1  # +1: atom index starts from 1
             ret.OBMol.AddBond(ap1, ap2, 1)  # ap1, ap2の間に単結合を追加
         return Mol(ret)
+
+    @classmethod
+    def read_sdf(cls, file_path: Path) -> tuple["Mol", ...]:
+        """
+        Reads molecules from an SDF file and returns the molecule objects
+        """
+        molecules = list(pybel.readfile("sdf", str(file_path)))
+        return tuple(cls(mol) for mol in molecules if mol is not None)

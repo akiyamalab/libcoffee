@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -115,5 +116,13 @@ class MolBase(ABC):
         Merges the current molecule with another molecule.
         If aps (attachment points) is given, the two molecules are bonded at the given attachment points.
         Isotope numbers of atoms in the given molecule are updated to avoid conflicts.
+        """
+        pass
+
+    @classmethod
+    @abstractmethod
+    def read_sdf(cls, file_path: Path) -> tuple:
+        """
+        Reads molecules from an SDF file and returns the molecule objects
         """
         pass
