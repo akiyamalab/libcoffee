@@ -1,7 +1,8 @@
-from libcoffee.rdkit.mol import Mol
-from rdkit import Chem
-import pytest
 import numpy as np
+import pytest
+from rdkit import Chem
+
+from libcoffee.rdkit.mol import Mol
 
 
 class TestMolFromSmiles:

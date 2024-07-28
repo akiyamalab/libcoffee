@@ -1,10 +1,13 @@
 from pathlib import Path
 from typing import Any
-from openbabel import pybel
-from libcoffee.common.molbase import MolBase
-from openbabel.openbabel import OBConversion
+
 import numpy as np
 import numpy.typing as npt
+from openbabel import pybel
+from openbabel.openbabel import OBConversion
+
+from libcoffee.common.molbase import MolBase
+
 from ._util import combine_two_mols
 
 

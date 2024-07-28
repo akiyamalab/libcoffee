@@ -1,9 +1,11 @@
 from pathlib import Path
 from typing import Any
-from libcoffee.common.molbase import MolBase
+
 import numpy as np
 import numpy.typing as npt
 from rdkit import Chem
+
+from libcoffee.common.molbase import MolBase
 
 
 class Mol(MolBase):

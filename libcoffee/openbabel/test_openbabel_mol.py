@@ -1,7 +1,8 @@
-from libcoffee.openbabel.mol import Mol
-from openbabel import pybel
-import pytest
 import numpy as np
+import pytest
+from openbabel import pybel
+
+from libcoffee.openbabel.mol import Mol
 
 
 class TestMolFromSmiles:

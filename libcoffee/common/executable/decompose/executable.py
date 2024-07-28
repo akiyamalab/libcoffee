@@ -1,7 +1,8 @@
-from pathlib import Path
-import subprocess
-from .config import CmpdDecomposeConfig
 import os
+import subprocess
+from pathlib import Path
+
+from .config import CmpdDecomposeConfig
 
 __PATH_DECOMPOSE = f"{os.path.dirname(__file__)}/decompose"
 

@@ -1,8 +1,9 @@
 import tempfile
-import numpy.typing as npt
-import numpy as np
 from dataclasses import dataclass, field
 from pathlib import Path
+
+import numpy as np
+import numpy.typing as npt
 
 
 @dataclass

@@ -1,8 +1,9 @@
-from pathlib import Path
+import os
 import subprocess
 import tempfile
+from pathlib import Path
+
 from .config import REstrettoConfig
-import os
 
 __PATH_ATOMGRID_GEN = f"{os.path.dirname(__file__)}/atomgrid-gen"
 __PATH_CONFORMER_DOCKING = f"{os.path.dirname(__file__)}/conformer-docking"

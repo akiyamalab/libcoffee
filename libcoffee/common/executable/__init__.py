@@ -1,2 +1,2 @@
-from .restretto import REstrettoConfig, REstretto
-from .decompose import CmpdDecomposeConfig, CmpdDecompose
+from .decompose import CmpdDecompose, CmpdDecomposeConfig
+from .restretto import REstretto, REstrettoConfig
