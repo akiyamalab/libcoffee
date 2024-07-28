@@ -56,3 +56,6 @@ class Molecule(MolBase):
 
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.raw_mol.data
+
+    def extract_submol(self, atom_idxs: list[int]) -> "MolBase":
+        raise NotImplementedError

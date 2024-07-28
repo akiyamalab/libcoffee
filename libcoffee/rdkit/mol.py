@@ -27,7 +27,8 @@ class Mol(MolBase):
     def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
         if len(isotopes) != len(self.atoms):
             raise ValueError("Length of isotopes should be equal to the number of atoms")
-        raise NotImplementedError
+        for i in range(len(self.atoms)):
+            self.atoms[i].SetIsotope(isotopes[i])
 
     @property
     def name(self) -> str:
@@ -35,7 +36,8 @@ class Mol(MolBase):
 
     @property
     def heavy_atom_indices(self) -> npt.NDArray[np.int_]:
-        raise NotImplementedError
+        atomic_nums = [a.GetAtomicNum() for a in self.atoms]
+        return np.where(np.array(atomic_nums) > 1)[0]
 
     def get_smiles(self, kekulize: bool = False) -> str:
         return Chem.MolToSmiles(self._mol, kekuleSmiles=kekulize)
@@ -47,4 +49,16 @@ class Mol(MolBase):
         return self._mol.HasProp(attr_name)
 
     def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
-        raise NotImplementedError
+        conf = self._mol.GetConformer()
+        coords = np.array([conf.GetAtomPosition(i) for i in range(self._mol.GetNumAtoms())])
+        if only_heavy_atom:
+            coords = coords[self.heavy_atom_indices]
+        return coords
+
+    def extract_submol(self, atom_idxs: list[int]) -> "MolBase":
+        rw_mol = Chem.RWMol(self.raw_mol)
+        idx_remove_atoms = set(range(self.raw_mol.GetNumAtoms())) - set(atom_idxs)
+        atomidxs = sorted(idx_remove_atoms)[::-1]
+        for idx in atomidxs:
+            rw_mol.RemoveAtom(idx)
+        return Mol(rw_mol.GetMol())

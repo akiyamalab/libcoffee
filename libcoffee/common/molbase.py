@@ -93,6 +93,13 @@ class MolBase(ABC):
         """
         pass
 
+    @abstractmethod
+    def extract_submol(self, atom_idxs: list[int]) -> "MolBase":
+        """
+        Extracts a substructure molecule from the original molecule with the given atom indices.
+        """
+        pass
+
 
     def center(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
         """
