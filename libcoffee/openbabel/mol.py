@@ -4,6 +4,7 @@ from libcoffee.common.molbase import MolBase
 from openbabel.openbabel import OBConversion
 import numpy as np
 import numpy.typing as npt
+from ._util import combine_two_mols
 
 
 class Mol(MolBase):
@@ -15,16 +16,16 @@ class Mol(MolBase):
         super().__init__(mol)
 
     @property
-    def atoms(self) -> list[pybel.Atom]:
-        return self.raw_mol.atoms
+    def __atoms(self) -> tuple[pybel.Atom, ...]:
+        return tuple(self.raw_mol.atoms)
 
     @property
     def isotopes(self) -> npt.NDArray[np.int_]:
-        return np.array([a.isotope for a in self.atoms], dtype=np.int_)
+        return np.array([a.isotope for a in self.__atoms], dtype=np.int_)
 
     @isotopes.setter
     def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
-        if len(isotopes) != len(self.atoms):
+        if len(isotopes) != len(self.__atoms):
             raise ValueError("Length of isotopes should be equal to the number of atoms")
         raise NotImplementedError
 
@@ -57,8 +58,14 @@ class Mol(MolBase):
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.raw_mol.data
 
-    def extract_submol(self, atom_idxs: list[int]) -> "MolBase":
+    def extract_submol(self, atom_idxs: tuple[int, ...]) -> "MolBase":
         raise NotImplementedError
 
-    def merge(self, mol: "Mol") -> "Mol":
-        raise NotImplementedError
+    def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":
+        natoms = len(self.__atoms)
+        ret = combine_two_mols(self.raw_mol, mol.raw_mol)
+        if aps is not None:
+            ap1, ap2 = aps
+            ap1, ap2 = ap1 + 1, ap2 + natoms + 1  # +1: atom index starts from 1
+            ret.OBMol.AddBond(ap1, ap2, 1)  # ap1, ap2の間に単結合を追加
+        return Mol(ret)

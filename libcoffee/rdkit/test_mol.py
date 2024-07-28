@@ -9,4 +9,4 @@ class TestMol:
         self.mol = Mol(Chem.MolFromSmiles("c1ccccc1"))
 
     def test_atoms(self, init):
-        assert len(self.mol.atoms) == 6
+        assert len(self.mol.__atoms) == 6

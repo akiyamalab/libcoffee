@@ -24,9 +24,10 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def atoms(self) -> list:
+    def __atoms(self) -> tuple:
         """
-        Returns a list of atoms in the molecule
+        Returns a list of atoms in the molecule.
+        This method should be private method because output is not consistent between RDKit and OpenBabel.
         """
         pass
 
@@ -94,7 +95,7 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
-    def extract_submol(self, atom_idxs: list[int]) -> "MolBase":
+    def extract_submol(self, atom_idxs: tuple[int, ...]) -> "MolBase":
         """
         Extracts a substructure molecule from the original molecule with the given atom indices.
         """
@@ -109,9 +110,10 @@ class MolBase(ABC):
         return np.mean(self.get_coordinates(only_heavy_atom), axis=0)
 
     @abstractmethod
-    def merge(self, mol):
+    def merge(self, mol, aps: tuple[int, int]|None=None):
         """
         Merges the current molecule with another molecule.
+        If aps (attachment points) is given, the two molecules are bonded at the given attachment points.
         Isotope numbers of atoms in the given molecule are updated to avoid conflicts.
         """
         pass
