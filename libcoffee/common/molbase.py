@@ -94,7 +94,7 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
-    def extract_submol(self, atom_idxs: tuple[int, ...]) -> "MolBase":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.int_]) -> "MolBase":
         """
         Extracts a substructure molecule from the original molecule with the given atom indices.
         """

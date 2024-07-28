@@ -57,7 +57,7 @@ class Mol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
-    def extract_submol(self, atom_idxs: tuple[int, ...]) -> "Mol":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.int_]) -> "Mol":
         rw_mol = Chem.RWMol(self.raw_mol)
         idx_remove_atoms = set(range(self.raw_mol.GetNumAtoms())) - set(atom_idxs)
         atomidxs = sorted(idx_remove_atoms)[::-1]

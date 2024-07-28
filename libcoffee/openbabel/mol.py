@@ -61,7 +61,7 @@ class Mol(MolBase):
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.raw_mol.data
 
-    def extract_submol(self, atom_idxs: tuple[int, ...]) -> "MolBase":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.int_]) -> "MolBase":
         raise NotImplementedError
 
     def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":

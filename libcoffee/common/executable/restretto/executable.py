@@ -15,6 +15,7 @@ def _generate_atomgrid(config: REstrettoConfig, verbose=False) -> tuple[str, str
     """
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as fout:
         fout.write(str(config))
+        fout.flush()
         config_path = Path(fout.name)
         ret = subprocess.run(
             [__PATH_ATOMGRID_GEN, str(config_path)],
@@ -31,6 +32,7 @@ def _dock_cmpds(config: REstrettoConfig, verbose=False) -> tuple[str, str]:
     """
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as fout:
         fout.write(str(config))
+        fout.flush()
         config_path = Path(fout.name)
         ret = subprocess.run(
             [__PATH_CONFORMER_DOCKING, str(config_path)],
@@ -67,4 +69,6 @@ class REstretto:
     def result(self) -> Path:
         if not self.done:
             raise ValueError("REstretto has not been run yet.")
+        if self.config.output is None:
+            raise ValueError("Output path has not been set in the config.")
         return self.config.output
