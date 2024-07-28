@@ -39,28 +39,29 @@ def _dock_cmpds(config: REstrettoConfig, verbose=False) -> tuple[str, str]:
         )
     return ret.stdout.decode("utf-8").strip(), ret.stderr.decode("utf-8").strip()
 
+
 class REstretto:
-    def __init__(self, config: REstrettoConfig, verbose: bool=False):
+    def __init__(self, config: REstrettoConfig, verbose: bool = False):
         self.config = config
-        self.verbose = verbose 
+        self.verbose = verbose
         self.done = False
         self.stdout = {"atom_grid": "", "docking": ""}
         self.stderr = {"atom_grid": "", "docking": ""}
 
     def run(self) -> "REstretto":
-            try:
-                self.stdout["atom_grid"], self.stderr["atom_grid"] = _generate_atomgrid(self.config, verbose=self.verbose)
-                self.stdout["docking"], self.stderr["docking"] = _dock_cmpds(self.config, verbose=self.verbose)
-                self.done = True
-            except subprocess.CalledProcessError as e:
-                # TODO treat exceptions more properly
-                print(f"Failed to execute {e.cmd}:")
-                print(f"  {e.stderr.decode('utf-8')}")
-                print(f"Configs are:")
-                print(str(self.config))
-                raise e
-            return self
-    
+        try:
+            self.stdout["atom_grid"], self.stderr["atom_grid"] = _generate_atomgrid(self.config, verbose=self.verbose)
+            self.stdout["docking"], self.stderr["docking"] = _dock_cmpds(self.config, verbose=self.verbose)
+            self.done = True
+        except subprocess.CalledProcessError as e:
+            # TODO treat exceptions more properly
+            print(f"Failed to execute {e.cmd}:")
+            print(f"  {e.stderr.decode('utf-8')}")
+            print(f"Configs are:")
+            print(str(self.config))
+            raise e
+        return self
+
     @property
     def result(self) -> Path:
         if not self.done:

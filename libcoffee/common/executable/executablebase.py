@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
 
+
 class ExecutableBase(ABC):
 
     def __init__(self, verbose=False):
@@ -10,5 +11,5 @@ class ExecutableBase(ABC):
     def run(self): ...
 
     @property
-    @abstractmethod    
+    @abstractmethod
     def result(self) -> Path: ...

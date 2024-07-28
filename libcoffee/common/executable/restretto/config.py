@@ -15,9 +15,7 @@ class REstrettoConfig:
     output: Path = Path()
 
     search_pitch: npt.NDArray[np.float_] = field(default_factory=lambda: np.array([1.0, 1.0, 1.0], dtype=np.float_))
-    scoring_pitch: npt.NDArray[np.float_] = field(
-        default_factory=lambda: np.array([0.25, 0.25, 0.25], dtype=np.float_)
-    )
+    scoring_pitch: npt.NDArray[np.float_] = field(default_factory=lambda: np.array([0.25, 0.25, 0.25], dtype=np.float_))
     memory_size: int = 8000
     grid_folder: Path | None = None
     no_local_opt: bool = False

@@ -1,4 +1,6 @@
 from openbabel import pybel
+
+
 def combine_two_mols(mol1: pybel.Molecule, mol2: pybel.Molecule) -> pybel.Molecule:
     mol = mol1.clone
     cnt = len(mol.atoms)

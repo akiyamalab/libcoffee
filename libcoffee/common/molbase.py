@@ -48,7 +48,6 @@ class MolBase(ABC):
         """
         pass
 
-
     @property
     @abstractmethod
     def name(self) -> str:
@@ -57,7 +56,6 @@ class MolBase(ABC):
         """
         pass
 
-
     @property
     @abstractmethod
     def heavy_atom_indices(self) -> npt.NDArray[np.int_]:
@@ -65,7 +63,6 @@ class MolBase(ABC):
         Returns the indices of heavy atoms in the molecule
         """
         pass
-
 
     @abstractmethod
     def get_smiles(self, kekulize: bool = False) -> str:
@@ -87,6 +84,7 @@ class MolBase(ABC):
         Returns True if the molecule has an attribute with the given name
         """
         pass
+
     @abstractmethod
     def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
         """
@@ -102,7 +100,6 @@ class MolBase(ABC):
         """
         pass
 
-
     def center(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
         """
         Returns the center of the molecule.
@@ -111,7 +108,7 @@ class MolBase(ABC):
         return np.mean(self.get_coordinates(only_heavy_atom), axis=0)
 
     @abstractmethod
-    def merge(self, mol, aps: tuple[int, int]|None=None):
+    def merge(self, mol, aps: tuple[int, int] | None = None):
         """
         Merges the current molecule with another molecule.
         If aps (attachment points) is given, the two molecules are bonded at the given attachment points.
@@ -121,7 +118,7 @@ class MolBase(ABC):
 
     def split(self) -> tuple:
         """
-        Splits the molecule into fragments based on isotopes information 
+        Splits the molecule into fragments based on isotopes information
         and returns the fragment molecules
         """
         frag_idxs = np.unique(self.isotopes)
@@ -129,7 +126,7 @@ class MolBase(ABC):
         for idx in frag_idxs:
             atom_idxs = np.where(self.isotopes == idx)[0]
             frags.append(self.extract_submol(atom_idxs))
-        return tuple(frags)        
+        return tuple(frags)
 
     @classmethod
     @abstractmethod

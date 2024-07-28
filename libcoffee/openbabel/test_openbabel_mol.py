@@ -3,6 +3,7 @@ from openbabel import pybel
 import pytest
 import numpy as np
 
+
 class TestMolFromSmiles:
     @pytest.fixture
     def init(self):
@@ -23,4 +24,4 @@ class TestMolFromSmiles:
         assert np.all(self.mol.heavy_atom_indices == np.array([0, 1, 2, 3, 4, 5]))
 
     def test_get_smiles(self, init):
-        assert self.mol.get_smiles() == "c1ccccc1"   
+        assert self.mol.get_smiles() == "c1ccccc1"

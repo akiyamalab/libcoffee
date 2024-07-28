@@ -45,7 +45,6 @@ class Mol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
-
     def get_smiles(self, kekulize: bool = False) -> str:
         obConversion = OBConversion()
         obConversion.SetOutFormat("can")

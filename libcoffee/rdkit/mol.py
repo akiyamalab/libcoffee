@@ -14,7 +14,6 @@ class Mol(MolBase):
     def __init__(self, mol: Chem.Mol):
         super().__init__(mol)
 
-
     @property
     def _atoms(self) -> tuple[Chem.Atom, ...]:
         return tuple(m for m in self._mol.GetAtoms())
@@ -22,7 +21,7 @@ class Mol(MolBase):
     @property
     def isotopes(self) -> npt.NDArray[np.int_]:
         # a.GetIsotope() should return int but typing says return Any
-        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int_) # type: ignore  # Argument is not needed for GetIsotope()
+        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int_)  # type: ignore  # Argument is not needed for GetIsotope()
 
     @isotopes.setter
     def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
@@ -62,7 +61,7 @@ class Mol(MolBase):
         atomidxs = sorted(idx_remove_atoms)[::-1]
         for idx in atomidxs:
             rw_mol.RemoveAtom(idx)
-        return Mol(rw_mol.GetMol()) # type: ignore  # Argument of GetMol() is not needed
+        return Mol(rw_mol.GetMol())  # type: ignore  # Argument of GetMol() is not needed
 
     def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":
         raise NotImplementedError
