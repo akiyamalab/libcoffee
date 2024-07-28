@@ -1,2 +1,2 @@
-from .config import *
-from .executable import *
+from .config import REstrettoConfig
+from .executable import REstretto

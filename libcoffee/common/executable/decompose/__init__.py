@@ -1,2 +1,2 @@
-from .config import *
-from .executable import *
+from .config import CmpdDecomposeConfig
+from .executable import CmpdDecompose
