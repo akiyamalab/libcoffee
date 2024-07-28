@@ -8,7 +8,7 @@ __PATH_ATOMGRID_GEN = f"{os.path.dirname(__file__)}/atomgrid-gen"
 __PATH_CONFORMER_DOCKING = f"{os.path.dirname(__file__)}/conformer-docking"
 
 
-def _generate_atomgrid(config: REstrettoConfig, verbose=False) -> str:
+def _generate_atomgrid(config: REstrettoConfig, verbose=False) -> tuple[str, str]:
     """
     execute atomgrid-gen based on the given config file.
     """
@@ -24,7 +24,7 @@ def _generate_atomgrid(config: REstrettoConfig, verbose=False) -> str:
     return ret.stdout.decode("utf-8").strip(), ret.stderr.decode("utf-8").strip()
 
 
-def _dock_cmpds(config: REstrettoConfig, verbose=False) -> str:
+def _dock_cmpds(config: REstrettoConfig, verbose=False) -> tuple[str, str]:
     """
     conformer-dockingを実行する。
     """
@@ -37,7 +37,7 @@ def _dock_cmpds(config: REstrettoConfig, verbose=False) -> str:
             stderr=subprocess.PIPE,
             check=True,
         )
-    return ret.stdout.decode("utf-8").strip()
+    return ret.stdout.decode("utf-8").strip(), ret.stderr.decode("utf-8").strip()
 
 class REstretto:
     def __init__(self, config: REstrettoConfig, verbose: bool=False):

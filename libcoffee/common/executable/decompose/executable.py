@@ -5,7 +5,7 @@ import os
 
 __PATH_DECOMPOSE = f"{os.path.dirname(__file__)}/decompose"
 
-def _decompose(config: CmpdDecomposeConfig, verbose=False) -> str:
+def _decompose(config: CmpdDecomposeConfig, verbose=False) -> tuple[str, str]:
     """
     execute decompose based on the given config file.
     """

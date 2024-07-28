@@ -21,7 +21,7 @@ class Mol(MolBase):
     @property
     def isotopes(self) -> npt.NDArray[np.int_]:
         # a.GetIsotope() should return int but typing says return Any
-        return np.array([a.GetIsotope() for a in self.atoms], dtype=np.int_)  # type: ignore
+        return np.array([a.GetIsotope() for a in self.atoms], dtype=np.int_) # type: ignore  # Argument is not needed for GetIsotope()
 
     @isotopes.setter
     def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
@@ -61,4 +61,4 @@ class Mol(MolBase):
         atomidxs = sorted(idx_remove_atoms)[::-1]
         for idx in atomidxs:
             rw_mol.RemoveAtom(idx)
-        return Mol(rw_mol.GetMol())
+        return Mol(rw_mol.GetMol()) # type: ignore  # Argument of GetMol() is not needed
