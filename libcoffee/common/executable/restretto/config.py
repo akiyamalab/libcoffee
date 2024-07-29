@@ -97,8 +97,6 @@ class REstrettoConfig:
 
     @output.setter
     def output(self, value: Path | None) -> None:
-        if value is not None and value.exists() and not self.overwrite:
-            raise FileExistsError(f"Output file already exists: {value}")
         if value is not None and value.is_dir():
             raise IsADirectoryError(f"Output is a directory: {value}")
         self._output: Path | None = value
@@ -205,6 +203,8 @@ class REstrettoConfig:
             raise ValueError("Ligand files must be specified.")
         if self.output is None:
             raise ValueError("Output file must be specified.")
+        if self.output.exists() and not self.overwrite:
+            raise FileExistsError(f"Output file already exists: {self.output}")
 
         if self.grid_folder is None:
             self.grid_folder = Path(tempfile.mkdtemp())
