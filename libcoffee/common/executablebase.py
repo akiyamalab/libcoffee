@@ -4,12 +4,9 @@ from pathlib import Path
 
 class ExecutableBase(ABC):
 
-    def __init__(self, verbose=False):
-        self.verbose = verbose
+    def __init__(self, exec: Path, verbose: bool = False):
+        self._verbose = verbose
+        self._exec = exec
 
     @abstractmethod
-    def run(self): ...
-
-    @property
-    @abstractmethod
-    def result(self) -> Path: ...
+    def run(self) -> "ExecutableBase": ...

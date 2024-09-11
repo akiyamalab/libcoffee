@@ -1,6 +1,14 @@
+from dataclasses import dataclass
 from typing import Final
 
 from libcoffee.molecule.molbase import MolBase
+
+
+@dataclass(frozen=True)
+class DockingRegion:
+    center: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    size: tuple[int, int, int] = (10, 10, 10)
+    pitch: tuple[float, float, float] = (1.0, 1.0, 1.0)
 
 
 def _eboxsize(mol: MolBase) -> int:
