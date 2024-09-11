@@ -6,7 +6,7 @@ import numpy.typing as npt
 from openbabel import pybel
 from openbabel.openbabel import OBConversion
 
-from libcoffee.common.molbase import MolBase
+from libcoffee.molecule.molbase import MolBase
 
 from ._util import combine_two_mols
 

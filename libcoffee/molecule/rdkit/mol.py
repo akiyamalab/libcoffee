@@ -5,7 +5,7 @@ import numpy as np
 import numpy.typing as npt
 from rdkit import Chem
 
-from libcoffee.common.molbase import MolBase
+from libcoffee.molecule.molbase import MolBase
 
 
 class Mol(MolBase):
