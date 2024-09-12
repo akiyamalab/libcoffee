@@ -1,4 +1,5 @@
 import tempfile
+import warnings
 from pathlib import Path
 from typing import Optional
 
@@ -11,7 +12,7 @@ from libcoffee.docking.docking_region import DockingRegion
 class _REstrettoConfig:
     def __init__(
         self,
-        docking_region: DockingRegion,
+        docking_region: Optional[DockingRegion] = None,
         outerbox: Optional[npt.NDArray[np.int32]] = None,
         scoring_pitch: npt.NDArray[np.float64] = np.array([0.25, 0.25, 0.25], dtype=np.float64),
         memory_size: int = 8000,
@@ -22,8 +23,10 @@ class _REstrettoConfig:
         poses_per_lig_before_opt: int = 2000,
         log: Path | None = None,
     ):
-        self.__docking_region = docking_region
-        self.outerbox = outerbox if outerbox is not None else np.array(docking_region.size) + 10
+        self.innerbox = np.array(docking_region.size) if docking_region is not None else np.array([10, 10, 10])
+        self.outerbox = outerbox if outerbox is not None else self.innerbox + 10
+        self.box_center = np.array(docking_region.center) if docking_region is not None else np.array([0.0, 0.0, 0.0])
+        self.search_pitch = np.array(docking_region.pitch) if docking_region is not None else np.array([1.0, 1.0, 1.0])
         self.scoring_pitch = scoring_pitch
         self.memory_size = memory_size
         self.no_local_opt = no_local_opt
@@ -32,6 +35,18 @@ class _REstrettoConfig:
         self.output_score_threshold = output_score_threshold
         self.poses_per_lig_before_opt = poses_per_lig_before_opt
         self.log = log if log is not None else Path("/dev/null")
+
+    @property
+    def innerbox(self) -> npt.NDArray[np.int32]:
+        return self._innerbox
+
+    @innerbox.setter
+    def innerbox(self, value: npt.NDArray[np.int32]) -> None:
+        if value.shape != (3,):
+            raise ValueError("innerbox must be a 3D information.")
+        if not np.all(value > 0):
+            raise ValueError("innerbox must be positive.")
+        self._innerbox = value
 
     @property
     def outerbox(self) -> npt.NDArray[np.int32]:
@@ -44,6 +59,28 @@ class _REstrettoConfig:
         if not np.all(value > 0):
             raise ValueError("outerbox must be positive.")
         self._outerbox = value
+
+    @property
+    def box_center(self) -> npt.NDArray[np.float64]:
+        return self._box_center
+
+    @box_center.setter
+    def box_center(self, value: npt.NDArray[np.float64]) -> None:
+        if value.shape != (3,):
+            raise ValueError("box_center must be a 3D information.")
+        self._box_center = value
+
+    @property
+    def search_pitch(self) -> npt.NDArray[np.float64]:
+        return self._search_pitch
+
+    @search_pitch.setter
+    def search_pitch(self, value: npt.NDArray[np.float64]) -> None:
+        if value.shape != (3,):
+            raise ValueError("search_pitch must be a 3D information.")
+        if not np.all(value > 0):
+            raise ValueError("search_pitch must be positive.")
+        self._search_pitch = value
 
     @property
     def scoring_pitch(self) -> npt.NDArray[np.float64]:
@@ -110,10 +147,10 @@ class _REstrettoConfig:
     def __str__(self) -> str:
 
         ret: list[str] = []
-        ret.append(f"INNERBOX {', '.join(str(elem) for elem in self.__docking_region.size)}")
+        ret.append(f"INNERBOX {', '.join(str(elem) for elem in self.innerbox)}")
         ret.append(f"OUTERBOX {', '.join(str(elem) for elem in self.outerbox)}")
-        ret.append(f"BOX_CENTER {', '.join(str(elem) for elem in self.__docking_region.center)}")
-        ret.append(f"SEARCH_PITCH {', '.join(str(elem) for elem in self.__docking_region.pitch)}")
+        ret.append(f"BOX_CENTER {', '.join(str(elem) for elem in self.box_center)}")
+        ret.append(f"SEARCH_PITCH {', '.join(str(elem) for elem in self.search_pitch)}")
         ret.append(f"SCORING_PITCH {', '.join(str(elem) for elem in self.scoring_pitch)}")
         ret.append(f"MEMORY_SIZE {str(self.memory_size)}")
         ret.append(f"NO_LOCAL_OPT {str(self.no_local_opt)}")
@@ -147,11 +184,11 @@ class _REstrettoConfig:
                 elif k == "MEMORY_SIZE":
                     ret.memory_size = int(v)
                 elif k == "RECEPTOR":
-                    ret.receptor = Path(v)
+                    warnings.warn("RECEPTOR is not be stored in the config file.", RuntimeWarning)
                 elif k == "LIGAND":
-                    ret.ligands.append(Path(v))
+                    warnings.warn("LIGAND is not be stored in the config file.", RuntimeWarning)
                 elif k == "OUTPUT":
-                    ret.output = Path(v)
+                    warnings.warn("OUTPUT is not be stored in the config file.", RuntimeWarning)
                 elif k == "NO_LOCAL_OPT":
                     ret.no_local_opt = bool(v)
                 elif k == "POSES_PER_LIG":

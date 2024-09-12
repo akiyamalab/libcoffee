@@ -130,7 +130,6 @@ class REstretto(ExecutableBase):
             print(f"Configs are:")
             print(str(self.__config))
             raise e
-        return self
 
     def save(self, outputfile: SDFFile) -> "REstretto":
         shutil.copy(self.__outputfile.name, outputfile)

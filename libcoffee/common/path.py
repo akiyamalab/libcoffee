@@ -2,27 +2,27 @@ from pathlib import Path
 
 
 class SDFFile(Path):
-    _flavour = type(Path())._flavour
+    _flavour = type(Path())._flavour  # type: ignore[attr-defined]
 
-    def __init__(self, file: Path):
-        super().__init__()
-        if self.suffix != ".sdf":
-            raise ValueError(f"File {file} is not an SDF file")
+    def __new__(cls, file: Path | str):
+        if Path(file).suffix != ".sdf":
+            raise ValueError(f"File {file} is not a SDF file")
+        return super().__new__(cls, file)
 
 
 class PDBFile(Path):
-    _flavour = type(Path())._flavour
+    _flavour = type(Path())._flavour  # type: ignore[attr-defined]
 
-    def __init__(self, file: Path):
-        super().__init__()
-        if self.suffix != ".pdb":
+    def __new__(cls, file: Path | str):
+        if Path(file).suffix != ".pdb":
             raise ValueError(f"File {file} is not a PDB file")
+        return super().__new__(cls, file)
 
 
 class FBDBFile(Path):
-    _flavour = type(Path())._flavour
+    _flavour = type(Path())._flavour  # type: ignore[attr-defined]
 
-    def __init__(self, file: Path):
-        super().__init__()
-        if self.suffix != ".fbdb":
+    def __new__(cls, file: Path | str):
+        if Path(file).suffix != ".fbdb":
             raise ValueError(f"File {file} is not a FBDB file")
+        return super().__new__(cls, file)

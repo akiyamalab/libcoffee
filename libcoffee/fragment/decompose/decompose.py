@@ -93,7 +93,7 @@ class CmpdDecompose(ExecutableBase):
             print(f"Failed to execute {e.cmd}:")
             print(f"  {e.stderr.decode('utf-8')}")
             print(f"Configs are:")
-            print(str(self.config))
+            print(str(self.__config))
             raise e
 
     def save(self, fragmentfile: SDFFile, annotatedfile: SDFFile) -> "CmpdDecompose":
