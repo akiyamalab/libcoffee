@@ -8,14 +8,14 @@ import numpy.typing as npt
 class REstrettoConfig:
     def __init__(
         self,
-        innerbox: npt.NDArray[np.int_] = np.array([10, 10, 10], dtype=np.int_),
-        outerbox: npt.NDArray[np.int_] = np.array([20, 20, 20], dtype=np.int_),
-        box_center: npt.NDArray[np.float_] = np.array([0, 0, 0], dtype=np.float_),
+        innerbox: npt.NDArray[np.int32] = np.array([10, 10, 10], dtype=np.int32),
+        outerbox: npt.NDArray[np.int32] = np.array([20, 20, 20], dtype=np.int32),
+        box_center: npt.NDArray[np.float64] = np.array([0, 0, 0], dtype=np.float64),
         receptor: Path | None = None,
         ligands: list[Path] = [],
         output: Path | None = None,
-        search_pitch: npt.NDArray[np.float_] = np.array([1.0, 1.0, 1.0], dtype=np.float_),
-        scoring_pitch: npt.NDArray[np.float_] = np.array([0.25, 0.25, 0.25], dtype=np.float_),
+        search_pitch: npt.NDArray[np.float64] = np.array([1.0, 1.0, 1.0], dtype=np.float64),
+        scoring_pitch: npt.NDArray[np.float64] = np.array([0.25, 0.25, 0.25], dtype=np.float64),
         memory_size: int = 8000,
         grid_folder: Path | None = None,
         no_local_opt: bool = False,
@@ -47,11 +47,11 @@ class REstrettoConfig:
         self.log = log
 
     @property
-    def innerbox(self) -> npt.NDArray[np.int_]:
+    def innerbox(self) -> npt.NDArray[np.int32]:
         return self._innerbox
 
     @innerbox.setter
-    def innerbox(self, value: npt.NDArray[np.int_]) -> None:
+    def innerbox(self, value: npt.NDArray[np.int32]) -> None:
         if value.shape != (3,):
             raise ValueError("innerbox must be a 3D information.")
         if not np.all(value > 0):
@@ -59,11 +59,11 @@ class REstrettoConfig:
         self._innerbox = value
 
     @property
-    def outerbox(self) -> npt.NDArray[np.int_]:
+    def outerbox(self) -> npt.NDArray[np.int32]:
         return self._outerbox
 
     @outerbox.setter
-    def outerbox(self, value: npt.NDArray[np.int_]) -> None:
+    def outerbox(self, value: npt.NDArray[np.int32]) -> None:
         if value.shape != (3,):
             raise ValueError("outerbox must be a 3D information.")
         if not np.all(value > 0):
@@ -102,21 +102,21 @@ class REstrettoConfig:
         self._output: Path | None = value
 
     @property
-    def box_center(self) -> npt.NDArray[np.float_]:
+    def box_center(self) -> npt.NDArray[np.float64]:
         return self._box_center
 
     @box_center.setter
-    def box_center(self, value: npt.NDArray[np.float_]) -> None:
+    def box_center(self, value: npt.NDArray[np.float64]) -> None:
         if value.shape != (3,):
             raise ValueError("box_center must be a 3D information.")
         self._box_center = value
 
     @property
-    def search_pitch(self) -> npt.NDArray[np.float_]:
+    def search_pitch(self) -> npt.NDArray[np.float64]:
         return self._search_pitch
 
     @search_pitch.setter
-    def search_pitch(self, value: npt.NDArray[np.float_]) -> None:
+    def search_pitch(self, value: npt.NDArray[np.float64]) -> None:
         if value.shape != (3,):
             raise ValueError("search_pitch must be a 3D information.")
         if not np.all(value > 0):
@@ -124,11 +124,11 @@ class REstrettoConfig:
         self._search_pitch = value
 
     @property
-    def scoring_pitch(self) -> npt.NDArray[np.float_]:
+    def scoring_pitch(self) -> npt.NDArray[np.float64]:
         return self._scoring_pitch
 
     @scoring_pitch.setter
-    def scoring_pitch(self, value: npt.NDArray[np.float_]) -> None:
+    def scoring_pitch(self, value: npt.NDArray[np.float64]) -> None:
         if value.shape != (3,):
             raise ValueError("scoring_pitch must be a 3D information.")
         if not np.all(value > 0):
@@ -240,15 +240,15 @@ class REstrettoConfig:
                     continue
                 k, v = line.split(maxsplit=1)
                 if k == "INNERBOX":
-                    ret.innerbox = np.array([int(elem) for elem in v.split(",")], dtype=np.int_)
+                    ret.innerbox = np.array([int(elem) for elem in v.split(",")], dtype=np.int32)
                 elif k == "OUTERBOX":
-                    ret.outerbox = np.array([int(elem) for elem in v.split(",")], dtype=np.int_)
+                    ret.outerbox = np.array([int(elem) for elem in v.split(",")], dtype=np.int32)
                 elif k == "BOX_CENTER":
-                    ret.box_center = np.array([float(elem) for elem in v.split(",")], dtype=np.float_)
+                    ret.box_center = np.array([float(elem) for elem in v.split(",")], dtype=np.float64)
                 elif k == "SEARCH_PITCH":
-                    ret.search_pitch = np.array([float(elem) for elem in v.split(",")], dtype=np.float_)
+                    ret.search_pitch = np.array([float(elem) for elem in v.split(",")], dtype=np.float64)
                 elif k == "SCORING_PITCH":
-                    ret.scoring_pitch = np.array([float(elem) for elem in v.split(",")], dtype=np.float_)
+                    ret.scoring_pitch = np.array([float(elem) for elem in v.split(",")], dtype=np.float64)
                 elif k == "MEMORY_SIZE":
                     ret.memory_size = int(v)
                 elif k == "RECEPTOR":

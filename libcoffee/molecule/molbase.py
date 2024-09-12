@@ -34,7 +34,7 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def isotopes(self) -> npt.NDArray[np.int_]:
+    def isotopes(self) -> npt.NDArray[np.int32]:
         """
         Returns a list of isotope numbers of atoms in the molecule
         """
@@ -42,7 +42,7 @@ class MolBase(ABC):
 
     @isotopes.setter
     @abstractmethod
-    def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
+    def isotopes(self, isotopes: npt.NDArray[np.int32]) -> None:
         """
         Sets the isotope numbers of atoms in the molecule
         """
@@ -58,7 +58,7 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def heavy_atom_indices(self) -> npt.NDArray[np.int_]:
+    def heavy_atom_indices(self) -> npt.NDArray[np.int32]:
         """
         Returns the indices of heavy atoms in the molecule
         """
@@ -86,7 +86,7 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
-    def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
+    def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
         """
         Returns the coordinates of all atoms that make up the molecule.
         If only_heavy_atom is True, return the coordinates of heavy atoms only.
@@ -94,13 +94,13 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
-    def extract_submol(self, atom_idxs: npt.NDArray[np.int_]) -> "MolBase":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.int32]) -> "MolBase":
         """
         Extracts a substructure molecule from the original molecule with the given atom indices.
         """
         pass
 
-    def center(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
+    def center(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
         """
         Returns the center of the molecule.
         If only_heavy_atom is True, return the center of heavy atoms only.

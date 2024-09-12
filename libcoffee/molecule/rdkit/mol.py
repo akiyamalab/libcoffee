@@ -21,12 +21,12 @@ class Mol(MolBase):
         return tuple(m for m in self._mol.GetAtoms())
 
     @property
-    def isotopes(self) -> npt.NDArray[np.int_]:
+    def isotopes(self) -> npt.NDArray[np.int32]:
         # a.GetIsotope() should return int but typing says return Any
-        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int_)  # type: ignore  # Argument is not needed for GetIsotope()
+        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int32)  # type: ignore  # Argument is not needed for GetIsotope()
 
     @isotopes.setter
-    def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
+    def isotopes(self, isotopes: npt.NDArray[np.int32]) -> None:
         if len(isotopes) != len(self._atoms):
             raise ValueError("Length of isotopes should be equal to the number of atoms")
         for i in range(len(self._atoms)):
@@ -37,7 +37,7 @@ class Mol(MolBase):
         return self._mol.GetProp("_Name")
 
     @property
-    def heavy_atom_indices(self) -> npt.NDArray[np.int_]:
+    def heavy_atom_indices(self) -> npt.NDArray[np.int32]:
         atomic_nums = [a.GetAtomicNum() for a in self._atoms]
         return np.where(np.array(atomic_nums) > 1)[0]
 
@@ -50,14 +50,14 @@ class Mol(MolBase):
     def has_attr(self, attr_name: str) -> bool:
         return self._mol.HasProp(attr_name)
 
-    def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
+    def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
         conf = self._mol.GetConformer()
         coords = np.array([conf.GetAtomPosition(i) for i in range(self._mol.GetNumAtoms())])
         if only_heavy_atom:
             coords = coords[self.heavy_atom_indices]
         return coords
 
-    def extract_submol(self, atom_idxs: npt.NDArray[np.int_]) -> "Mol":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.int32]) -> "Mol":
         rw_mol = Chem.RWMol(self.raw_mol)
         idx_remove_atoms = set(range(self.raw_mol.GetNumAtoms())) - set(atom_idxs)
         atomidxs = sorted(idx_remove_atoms)[::-1]

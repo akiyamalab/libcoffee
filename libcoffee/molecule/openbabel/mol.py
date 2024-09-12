@@ -24,11 +24,11 @@ class Mol(MolBase):
         return tuple(self.raw_mol.atoms)
 
     @property
-    def isotopes(self) -> npt.NDArray[np.int_]:
-        return np.array([a.isotope for a in self._atoms], dtype=np.int_)
+    def isotopes(self) -> npt.NDArray[np.int32]:
+        return np.array([a.isotope for a in self._atoms], dtype=np.int32)
 
     @isotopes.setter
-    def isotopes(self, isotopes: npt.NDArray[np.int_]) -> None:
+    def isotopes(self, isotopes: npt.NDArray[np.int32]) -> None:
         if len(isotopes) != len(self._atoms):
             raise ValueError("Length of isotopes should be equal to the number of atoms")
         raise NotImplementedError
@@ -38,11 +38,11 @@ class Mol(MolBase):
         return self.raw_mol.title
 
     @property
-    def heavy_atom_indices(self) -> npt.NDArray[np.int_]:
+    def heavy_atom_indices(self) -> npt.NDArray[np.int32]:
         unsorted_indices = list(set(np.where(np.array([a.atomicnum for a in self.raw_mol.atoms]) > 1)[0]))
-        return np.array(sorted(unsorted_indices), dtype=np.int_)
+        return np.array(sorted(unsorted_indices), dtype=np.int32)
 
-    def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float_]:
+    def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
         coords = np.array([a.coords for a in self.raw_mol.atoms])
         if only_heavy_atom:
             coords = coords[self.heavy_atom_indices]
@@ -61,7 +61,7 @@ class Mol(MolBase):
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.raw_mol.data
 
-    def extract_submol(self, atom_idxs: npt.NDArray[np.int_]) -> "MolBase":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.int32]) -> "MolBase":
         raise NotImplementedError
 
     def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":
