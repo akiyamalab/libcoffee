@@ -1,1 +1,1 @@
-from .conformergeneratorbase import ConformerGeneratorBase
+from .omega import Omega

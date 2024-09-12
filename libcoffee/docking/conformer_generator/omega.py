@@ -3,12 +3,12 @@ import subprocess
 import tempfile
 
 from libcoffee.common.path import SDFFile
-from libcoffee.docking.conformer_generator import ConformerGeneratorBase
+from libcoffee.docking.conformer_generator.conformergeneratorbase import ConformerGeneratorBase
 
 
 class Omega(ConformerGeneratorBase):
 
-    def run(self, file: SDFFile) -> "Omega":  # type: ignore[override]
+    def _run(self, file: SDFFile) -> None:  # type: ignore[override]
         self.__outputfile = tempfile.NamedTemporaryFile(suffix=".sdf")
         subprocess.run(
             [
@@ -18,18 +18,21 @@ class Omega(ConformerGeneratorBase):
                 "-in",
                 file,
                 "-out",
-                self.__outputfile,
+                self.__outputfile.name,
                 "-maxConfs",
                 str(self._max_confs),
                 "-rms",
                 str(self._min_rmsd),
-                "-eWindoew",
+                "-eWindow",
                 str(self._energy_tolerance),
             ],
             check=True,
         )
-        return self
 
     def save(self, path: SDFFile) -> "Omega":
         shutil.copy(self.__outputfile.name, path)
         return self
+        # TODO: below three files
+        # -rw-r--r-- 1 ud02114 tga-pharma 2.1K Sep 12 14:12 oeomega_classic_parm.txt
+        # -rw-r--r-- 1 ud02114 tga-pharma  193 Sep 12 14:12 oeomega_classic_rpt.csv
+        # -rw-r--r-- 1 ud02114 tga-pharma 4.0K Sep 12 14:12 oeomega_classic_log.txt
