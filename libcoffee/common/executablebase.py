@@ -10,10 +10,10 @@ class ExecutableBase(ABC):
         self.__done = False
 
     @abstractmethod
-    def _run(self, file: Path) -> None: ...
+    def _run(self, *args, **kwargs) -> None: ...
 
-    def run(self, file: Path) -> "ExecutableBase":
-        self._run(file)
+    def run(self, *args, **kwargs) -> "ExecutableBase":
+        self._run(*args, **kwargs)
         self.__done = True
         return self
 
