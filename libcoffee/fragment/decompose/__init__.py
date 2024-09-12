@@ -1,2 +1,1 @@
-from .config import CmpdDecomposeConfig
-from .executable import CmpdDecompose
+from .decompose import CmpdDecompose
