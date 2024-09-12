@@ -3,7 +3,7 @@ import subprocess
 from tempfile import NamedTemporaryFile
 
 from libcoffee.common.path import SDFFile
-from libcoffee.docking.state_generator import StateGeneratorBase
+from libcoffee.docking.state_generator.stategeneratorbase import StateGeneratorBase
 
 _inputfile_format = """
 INPUT_FILE_NAME   {inputsdf}
@@ -20,7 +20,9 @@ class Ligprep(StateGeneratorBase):
 
     def run(self, file: SDFFile) -> "Ligprep":  # type: ignore[override]
         self.__inputfile = NamedTemporaryFile(suffix=".inp")
-        self.__outputfile = NamedTemporaryFile(suffix=".sdf")
+        self.__outputfile = NamedTemporaryFile(dir=".", prefix=".", suffix=".sdf")
+        print(self.__inputfile, self.__outputfile)
+        # Ligprep requires output file must under the currect working directory
         with open(self.__inputfile.name, "w") as f:
             f.write(
                 _inputfile_format.format(
@@ -33,19 +35,26 @@ class Ligprep(StateGeneratorBase):
             f.flush()
         n_subtask = self._n_jobs * 10 if self._n_jobs > 1 else 1  # 10 is a magic number
         subprocess.run(
-            [
-                str(self._exec),
-                self.__inputfile.name,
-                "-NJOBS",
-                str(n_subtask),
-                "-HOST",
-                f"localhost:{self._n_jobs}",
-                "WAIT",
-            ],
+            " ".join(
+                [
+                    str(self._exec),
+                    "-inp",
+                    self.__inputfile.name,
+                    "-NJOBS",
+                    str(n_subtask),
+                    "-HOST",
+                    f"localhost:{self._n_jobs}",
+                    "-WAIT",
+                ]
+            ),
             check=True,
+            shell=True,
         )
+        # TODO: raise error with log file content if ligprep failed
         return self
 
     def save(self, path: SDFFile) -> "Ligprep":
+        # dropped-file "h8iu2tb1-dropped.sdf"
+        # log file "h8iu2tb1.log"
         shutil.copy(self.__outputfile.name, path)
         return self
