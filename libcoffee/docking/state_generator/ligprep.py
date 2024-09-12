@@ -18,7 +18,7 @@ NUM_STEREOISOMERS   {max_states}
 
 class Ligprep(StateGeneratorBase):
 
-    def run(self, file: SDFFile) -> "Ligprep":  # type: ignore[override]
+    def _run(self, file: SDFFile) -> None:  # type: ignore[override]
         self.__inputfile = NamedTemporaryFile(suffix=".inp")
         self.__outputfile = NamedTemporaryFile(dir=".", prefix=".", suffix=".sdf")
         print(self.__inputfile, self.__outputfile)
@@ -51,7 +51,6 @@ class Ligprep(StateGeneratorBase):
             shell=True,
         )
         # TODO: raise error with log file content if ligprep failed
-        return self
 
     def save(self, path: SDFFile) -> "Ligprep":
         # dropped-file "h8iu2tb1-dropped.sdf"
