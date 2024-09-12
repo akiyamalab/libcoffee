@@ -10,6 +10,12 @@ class DockingRegion:
     size: tuple[int, int, int] = (10, 10, 10)
     pitch: tuple[float, float, float] = (1.0, 1.0, 1.0)
 
+    @staticmethod
+    def from_molecule(mol: MolBase, pitch: tuple[float, float, float] = (1.0, 1.0, 1.0)) -> "DockingRegion":
+        center = mol.get_coordinates().mean(axis=0)
+        size = (_eboxsize(mol),) * 3
+        return DockingRegion(center=center, size=size, pitch=pitch)
+
 
 def _eboxsize(mol: MolBase) -> int:
     """
