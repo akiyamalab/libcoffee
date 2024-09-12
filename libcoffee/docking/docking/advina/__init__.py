@@ -1,1 +1,1 @@
-from autodockvina import ADVina
+from .autodockvina import ADVina

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from rdkit import Chem
 
-from libcoffee.rdkit.mol import Mol
+from libcoffee.molecule.rdkit.mol import Mol
 
 
 class TestMolFromSmiles:

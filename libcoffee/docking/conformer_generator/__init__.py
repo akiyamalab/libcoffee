@@ -1,1 +1,1 @@
-from conformergeneratorbase import ConformerGeneratorBase
+from .conformergeneratorbase import ConformerGeneratorBase

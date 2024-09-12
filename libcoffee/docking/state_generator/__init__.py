@@ -1,2 +1,2 @@
-from ligprep import Ligprep
-from stategeneratorbase import StateGeneratorBase
+from .ligprep import Ligprep
+from .stategeneratorbase import StateGeneratorBase

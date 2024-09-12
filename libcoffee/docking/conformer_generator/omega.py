@@ -8,23 +8,23 @@ from libcoffee.docking.conformer_generator import ConformerGeneratorBase
 
 class Omega(ConformerGeneratorBase):
 
-    def run(self, file: SDFFile) -> "Omega":
+    def run(self, file: SDFFile) -> "Omega":  # type: ignore[override]
         self.__outputfile = tempfile.NamedTemporaryFile(suffix=".sdf")
         subprocess.run(
             [
-                str(self.exec),
+                str(self._exec),
                 "-mpi_np",
-                self._n_jobs,
+                str(self._n_jobs),
                 "-in",
                 file,
                 "-out",
                 self.__outputfile,
                 "-maxConfs",
-                self._max_confs,
+                str(self._max_confs),
                 "-rms",
-                self._min_rmsd,
+                str(self._min_rmsd),
                 "-eWindoew",
-                self._energy_tolerance,
+                str(self._energy_tolerance),
             ],
             check=True,
         )
