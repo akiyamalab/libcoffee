@@ -66,7 +66,7 @@ class CmpdDecompose(ExecutableBase):
         verbose: bool = False,
     ):
         self.__config = _CmpdDecomposeConfig(
-            log=log,
+            log=log if log is not None else Path("/dev/null"),
             capping_atomic_num=capping_atomic_num,
             enable_carbon_capping=enable_carbon_capping,
             ins_fragment_id=ins_fragment_id,
