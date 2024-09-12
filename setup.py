@@ -31,8 +31,8 @@ setup(
     ],
     packages=find_packages(),
     package_data={
-        "libcoffee.common.executable.restretto": ["atomgrid-gen", "conformer-docking"],
-        "libcoffee.common.executable.decompose": ["decompose"],
+        "libcoffee.docking.docking.restretto": ["atomgrid-gen", "conformer-docking"],
+        "libcoffee.fragment.decompose": ["decompose"],
     },
     long_description=long_description,
     long_description_content_type="text/markdown",
