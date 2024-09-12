@@ -21,7 +21,6 @@ class Ligprep(StateGeneratorBase):
     def _run(self, file: SDFFile) -> None:  # type: ignore[override]
         self.__inputfile = NamedTemporaryFile(suffix=".inp")
         self.__outputfile = NamedTemporaryFile(dir=".", prefix=".", suffix=".sdf")
-        print(self.__inputfile, self.__outputfile)
         # Ligprep requires output file must under the currect working directory
         with open(self.__inputfile.name, "w") as f:
             f.write(
