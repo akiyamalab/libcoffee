@@ -10,7 +10,7 @@ from libcoffee.molecule.rdkit.mol import Mol
 class TestMolFromSmiles:
     @pytest.fixture
     def init(self: Self) -> None:
-        self.mol = Mol(Chem.MolFromSmiles("c1ccccc1 benzene"))  # type: ignore
+        self.mol = Mol(Chem.MolFromSmiles("c1ccccc1 benzene"))
 
     def test_isotopes(self: Self, init: Any) -> None:
         assert np.all(self.mol.isotopes == 0)

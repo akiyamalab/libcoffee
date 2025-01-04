@@ -58,7 +58,7 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def heavy_atom_indices(self: Self) -> npt.NDArray[np.int32]:
+    def heavy_atom_indices(self: Self) -> npt.NDArray[np.intp]:
         """
         Returns the indices of heavy atoms in the molecule
         """
@@ -94,7 +94,7 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
-    def extract_submol(self: Self, atom_idxs: npt.NDArray[np.int32]) -> "MolBase":
+    def extract_submol(self: Self, atom_idxs: npt.NDArray[np.intp]) -> "MolBase":
         """
         Extracts a substructure molecule from the original molecule with the given atom indices.
         """

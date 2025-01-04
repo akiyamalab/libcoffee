@@ -38,9 +38,9 @@ class Mol(MolBase):
         return self.raw_mol.title  # type: ignore[no-any-return]
 
     @property
-    def heavy_atom_indices(self) -> npt.NDArray[np.int32]:
-        unsorted_indices = list(set(np.where(np.array([a.atomicnum for a in self.raw_mol.atoms]) > 1)[0]))
-        return np.array(sorted(unsorted_indices), dtype=np.int32)
+    def heavy_atom_indices(self) -> npt.NDArray[np.intp]:
+        unsorted_indices: list[int] = list(set(np.where(np.array([a.atomicnum for a in self.raw_mol.atoms]) > 1)[0]))
+        return np.array(sorted(unsorted_indices), dtype=np.intp)
 
     def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
         coords = np.array([a.coords for a in self.raw_mol.atoms])
@@ -61,7 +61,7 @@ class Mol(MolBase):
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.raw_mol.data
 
-    def extract_submol(self, atom_idxs: npt.NDArray[np.int32]) -> "MolBase":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> "MolBase":
         raise NotImplementedError
 
     def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":
