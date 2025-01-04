@@ -11,7 +11,7 @@ from libcoffee.molecule.molbase import MolBase
 from ._util import combine_two_mols
 
 
-class Mol(MolBase):
+class PybelMol(MolBase):
     """
     openbabel.pybel.Molecule wrapper class
     """
@@ -64,17 +64,17 @@ class Mol(MolBase):
     def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> "MolBase":
         raise NotImplementedError
 
-    def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":
+    def merge(self, mol: "PybelMol", aps: tuple[int, int] | None = None) -> "PybelMol":
         natoms = len(self._atoms)
         ret = combine_two_mols(self.raw_mol, mol.raw_mol)
         if aps is not None:
             ap1, ap2 = aps
             ap1, ap2 = ap1 + 1, ap2 + natoms + 1  # +1: atom index starts from 1
             ret.OBMol.AddBond(ap1, ap2, 1)  # ap1, ap2の間に単結合を追加
-        return Mol(ret)
+        return PybelMol(ret)
 
     @classmethod
-    def read_sdf(cls, file_path: Path) -> tuple["Mol", ...]:
+    def read_sdf(cls, file_path: Path) -> tuple["PybelMol", ...]:
         """
         Reads molecules from an SDF file and returns the molecule objects
         """

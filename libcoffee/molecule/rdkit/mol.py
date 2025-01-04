@@ -8,7 +8,7 @@ from rdkit import Chem
 from libcoffee.molecule.molbase import MolBase
 
 
-class Mol(MolBase):
+class RDKitMol(MolBase):
     """
     rdkit.Chem.Mol wrapper class
     """
@@ -57,18 +57,18 @@ class Mol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
-    def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> "Mol":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> "RDKitMol":
         rw_mol = Chem.RWMol(self.raw_mol)
         idx_remove_atoms = set(range(self.raw_mol.GetNumAtoms())) - set(atom_idxs)
         atomidxs = sorted(idx_remove_atoms)[::-1]
         for idx in atomidxs:
             rw_mol.RemoveAtom(idx)
-        return Mol(rw_mol.GetMol())
+        return RDKitMol(rw_mol.GetMol())
 
-    def merge(self, mol: "Mol", aps: tuple[int, int] | None = None) -> "Mol":
+    def merge(self, mol: "RDKitMol", aps: tuple[int, int] | None = None) -> "RDKitMol":
         raise NotImplementedError
 
     @classmethod
-    def read_sdf(cls, file_path: Path) -> tuple["Mol", ...]:
+    def read_sdf(cls, file_path: Path) -> tuple["RDKitMol", ...]:
         suppl = Chem.SDMolSupplier(str(file_path))
-        return tuple(Mol(m) for m in suppl if m is not None)
+        return tuple(RDKitMol(m) for m in suppl if m is not None)

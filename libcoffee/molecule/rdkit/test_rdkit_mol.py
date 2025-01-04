@@ -4,13 +4,13 @@ import numpy as np
 import pytest
 from rdkit import Chem
 
-from libcoffee.molecule.rdkit.mol import Mol
+from libcoffee.molecule.rdkit.mol import RDKitMol
 
 
 class TestMolFromSmiles:
     @pytest.fixture
     def init(self: Self) -> None:
-        self.mol = Mol(Chem.MolFromSmiles("c1ccccc1 benzene"))
+        self.mol = RDKitMol(Chem.MolFromSmiles("c1ccccc1 benzene"))
 
     def test_isotopes(self: Self, init: Any) -> None:
         assert np.all(self.mol.isotopes == 0)

@@ -4,13 +4,13 @@ import numpy as np
 import pytest
 from openbabel import pybel
 
-from libcoffee.molecule.openbabel.mol import Mol
+from libcoffee.molecule.openbabel.mol import PybelMol
 
 
 class TestMolFromSmiles:
     @pytest.fixture
     def init(self: Self) -> None:
-        self.mol = Mol(pybel.readstring("smi", "c1ccccc1 benzene"))
+        self.mol = PybelMol(pybel.readstring("smi", "c1ccccc1 benzene"))
 
     def test_isotopes(self: Self, init: Any) -> None:
         assert np.all(self.mol.isotopes == 0)
