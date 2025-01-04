@@ -8,7 +8,7 @@ from libcoffee.docking.conformer_generator.conformergeneratorbase import Conform
 
 class Omega(ConformerGeneratorBase):
 
-    def _run(self, file: SDFFile) -> None:  # type: ignore[override]
+    def _run(self, file: SDFFile) -> None:
         self.__outputfile = tempfile.NamedTemporaryFile(suffix=".sdf")
         subprocess.run(
             [

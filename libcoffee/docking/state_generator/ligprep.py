@@ -18,7 +18,7 @@ NUM_STEREOISOMERS   {max_states}
 
 class Ligprep(StateGeneratorBase):
 
-    def _run(self, file: SDFFile) -> None:  # type: ignore[override]
+    def _run(self, file: SDFFile) -> None:
         self.__inputfile = NamedTemporaryFile(suffix=".inp")
         self.__outputfile = NamedTemporaryFile(dir=".", prefix=".", suffix=".sdf")
         # Ligprep requires output file must under the currect working directory

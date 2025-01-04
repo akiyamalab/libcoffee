@@ -14,7 +14,17 @@ jobs:
           context: .devcontainer
           tags: libcoffee
           push: false
-      
+
+      - name: Type check
+        uses: addnab/docker-run-action@v3
+        with:
+          image: libcoffee
+          options: -v ${{ github.workspace }}:/work
+          run: |
+            cd /work
+            pip install -e .
+            mypy --strict -p libcoffee --explicit-package-bases
+
       - name: Unittest
         uses: addnab/docker-run-action@v3
         with:
@@ -24,4 +34,3 @@ jobs:
             cd /work
             pip install -e .
             python -m pytest .
-            mypy libcoffee --explicit-package-bases

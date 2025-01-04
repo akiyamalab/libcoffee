@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
 import numpy.typing as npt
@@ -13,11 +13,11 @@ class MolBase(ABC):
     and reduce the amount of code duplication in the two classes.
     """
 
-    def __init__(self, mol):
+    def __init__(self: Self, mol: Any):
         self._mol = mol
 
     @property
-    def raw_mol(self):
+    def raw_mol(self: Self) -> Any:
         """
         Returns the raw molecule object
         """
@@ -25,7 +25,7 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def _atoms(self) -> tuple:
+    def _atoms(self: Self) -> tuple[Any, ...]:
         """
         Returns a list of atoms in the molecule.
         This method should be private method because output is not consistent between RDKit and OpenBabel.
@@ -34,7 +34,7 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def isotopes(self) -> npt.NDArray[np.int32]:
+    def isotopes(self: Self) -> npt.NDArray[np.int32]:
         """
         Returns a list of isotope numbers of atoms in the molecule
         """
@@ -42,7 +42,7 @@ class MolBase(ABC):
 
     @isotopes.setter
     @abstractmethod
-    def isotopes(self, isotopes: npt.NDArray[np.int32]) -> None:
+    def isotopes(self: Self, isotopes: npt.NDArray[np.int32]) -> None:
         """
         Sets the isotope numbers of atoms in the molecule
         """
@@ -50,7 +50,7 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def name(self) -> str:
+    def name(self: Self) -> str:
         """
         Returns the name of the molecule
         """
@@ -58,21 +58,21 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
-    def heavy_atom_indices(self) -> npt.NDArray[np.int32]:
+    def heavy_atom_indices(self: Self) -> npt.NDArray[np.int32]:
         """
         Returns the indices of heavy atoms in the molecule
         """
         pass
 
     @abstractmethod
-    def get_smiles(self, kekulize: bool = False) -> str:
+    def get_smiles(self: Self, kekulize: bool = False) -> str:
         """
         Returns the SMILES representation of the molecule
         """
         pass
 
     @abstractmethod
-    def get_attr(self, attr_name: str) -> Any:
+    def get_attr(self: Self, attr_name: str) -> Any:
         """
         Returns the value of the attribute with the given name
         """
@@ -86,7 +86,7 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
-    def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
+    def get_coordinates(self: Self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
         """
         Returns the coordinates of all atoms that make up the molecule.
         If only_heavy_atom is True, return the coordinates of heavy atoms only.
@@ -94,21 +94,21 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
-    def extract_submol(self, atom_idxs: npt.NDArray[np.int32]) -> "MolBase":
+    def extract_submol(self: Self, atom_idxs: npt.NDArray[np.int32]) -> "MolBase":
         """
         Extracts a substructure molecule from the original molecule with the given atom indices.
         """
         pass
 
-    def center(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
+    def center(self: Self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
         """
         Returns the center of the molecule.
         If only_heavy_atom is True, return the center of heavy atoms only.
         """
-        return np.mean(self.get_coordinates(only_heavy_atom), axis=0)
+        return np.mean(self.get_coordinates(only_heavy_atom), axis=0)  # type: ignore[no-any-return]
 
     @abstractmethod
-    def merge(self, mol, aps: tuple[int, int] | None = None):
+    def merge(self: Self, mol: Any, aps: tuple[int, int] | None = None) -> "MolBase":
         """
         Merges the current molecule with another molecule.
         If aps (attachment points) is given, the two molecules are bonded at the given attachment points.
@@ -116,13 +116,13 @@ class MolBase(ABC):
         """
         pass
 
-    def split(self) -> tuple:
+    def split(self: Self) -> tuple["MolBase", ...]:
         """
         Splits the molecule into fragments based on isotopes information
         and returns the fragment molecules
         """
         frag_idxs = np.unique(self.isotopes)
-        frags = []
+        frags: list["MolBase"] = []
         for idx in frag_idxs:
             atom_idxs = np.where(self.isotopes == idx)[0]
             frags.append(self.extract_submol(atom_idxs))
@@ -130,7 +130,7 @@ class MolBase(ABC):
 
     @classmethod
     @abstractmethod
-    def read_sdf(cls, file_path: Path) -> tuple:
+    def read_sdf(cls, file_path: Path) -> tuple["MolBase", ...]:
         """
         Reads molecules from an SDF file and returns the molecule objects
         """

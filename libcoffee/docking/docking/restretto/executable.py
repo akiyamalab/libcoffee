@@ -43,7 +43,7 @@ def _dock_cmpds(
     ligandfile: SDFFile,
     grid_folder: Path,
     outputfile: SDFFile,
-    verbose=False,
+    verbose: bool = False,
 ) -> tuple[str, str]:
     """
     conformer-dockingを実行する。

@@ -34,7 +34,7 @@ class Mol(MolBase):
 
     @property
     def name(self) -> str:
-        return self._mol.GetProp("_Name")
+        return self._mol.GetProp("_Name")  # type: ignore[no-any-return]
 
     @property
     def heavy_atom_indices(self) -> npt.NDArray[np.int32]:
@@ -48,7 +48,7 @@ class Mol(MolBase):
         return self._mol.GetProp(attr_name)
 
     def has_attr(self, attr_name: str) -> bool:
-        return self._mol.HasProp(attr_name)
+        return self._mol.HasProp(attr_name)  # type: ignore[no-any-return]
 
     def get_coordinates(self, only_heavy_atom: bool = False) -> npt.NDArray[np.float64]:
         conf = self._mol.GetConformer()

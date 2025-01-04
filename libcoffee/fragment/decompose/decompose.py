@@ -39,7 +39,11 @@ class _CmpdDecomposeConfig:
 
 
 def _decompose(
-    config: _CmpdDecomposeConfig, ligand_file: SDFFile, fragment_file: SDFFile, annotated_file: SDFFile, verbose=False
+    config: _CmpdDecomposeConfig,
+    ligand_file: SDFFile,
+    fragment_file: SDFFile,
+    annotated_file: SDFFile,
+    verbose: bool = False,
 ) -> tuple[str, str]:
     """
     execute decompose based on the given config file.

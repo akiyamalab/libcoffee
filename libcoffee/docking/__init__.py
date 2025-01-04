@@ -1,3 +1,3 @@
-from libcoffee.docking.docking.advina import ADVina
-from libcoffee.docking.docking.restretto import REstretto
-from libcoffee.docking.docking_region import DockingRegion
+from .docking.advina.autodockvina import ADVina
+from .docking.restretto.executable import REstretto
+from .docking_region import DockingRegion

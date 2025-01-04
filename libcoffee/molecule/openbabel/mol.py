@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
 import numpy.typing as npt
@@ -35,7 +35,7 @@ class Mol(MolBase):
 
     @property
     def name(self) -> str:
-        return self.raw_mol.title
+        return self.raw_mol.title  # type: ignore[no-any-return]
 
     @property
     def heavy_atom_indices(self) -> npt.NDArray[np.int32]:
@@ -53,7 +53,7 @@ class Mol(MolBase):
         obConversion.SetOutFormat("can")
         if kekulize:
             obConversion.SetOptions("k", obConversion.OUTOPTIONS)
-        return obConversion.WriteString(self.raw_mol.OBMol).split()[0]
+        return obConversion.WriteString(self.raw_mol.OBMol).split()[0]  # type: ignore[no-any-return]
 
     def get_attr(self, attr_name: str) -> Any:
         return self.raw_mol.data[attr_name]

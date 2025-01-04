@@ -4,7 +4,7 @@ from typing import Generator
 from libcoffee.common.path import SDFFile
 
 
-def SubSDFFileGenerator(file: SDFFile, n_cmpds_per_file: int = -1) -> Generator[_TemporaryFileWrapper, None, None]:
+def SubSDFFileGenerator(file: SDFFile, n_cmpds_per_file: int = -1) -> Generator[_TemporaryFileWrapper[str], None, None]:
     """
     SDFファイルを分割するためのジェネレータ。tempfile.NamedTemporaryFileを返す。
     """
