@@ -1,20 +1,31 @@
+from typing import Literal
+
 import numpy as np
 import numpy.typing as npt
 
 
-def enrichment_factor_score(y_true: npt.ArrayLike, y_score: npt.ArrayLike, fraction: float = 0.01) -> float:
+def enrichment_factor_score(
+    y_true: npt.ArrayLike,
+    y_score: npt.ArrayLike,
+    fraction: float = 0.01,
+    tie_handling: Literal["strict", "expand"] = "strict",
+) -> float:
     """
-    Calculate the Enrichment Factor (EF).
+    Calculate the Enrichment Factor (EF), with an option to handle tied scores.
 
     Parameters
     ----------
     y_true : npt.ArrayLike of shape (n_samples,)
-        Ground truth labels for each sample, where 1 indicates "active" and 0 indicates "inactive".
+        Ground truth labels for each sample (1 = active, 0 = inactive).
     y_score : npt.ArrayLike of shape (n_samples,)
-        Model scores or predicted scores for each sample. A higher score indicates a higher likelihood of being active.
+        Model scores or predicted scores (higher = more likely to be active).
     fraction : float, default=0.01
-        The fraction (between 0 and 1) of the total samples considered as the "top" range.
-        For instance, fraction=0.01 corresponds to the top 1%.
+        The fraction (0 < fraction <= 1) of the total samples to consider as "top."
+        For example, fraction=0.01 corresponds to the top 1%.
+    tie_handling : {"strict", "expand"}, default="strict"
+        "strict" : Select exactly `fraction * n_samples` samples (rounded down).
+        "expand" : If the sample at the boundary ties with the next sample's score,
+                   include all samples with that same score.
 
     Returns
     -------
@@ -29,7 +40,7 @@ def enrichment_factor_score(y_true: npt.ArrayLike, y_score: npt.ArrayLike, fract
         - If y_true and y_score have different lengths.
     """
 
-    # Convert inputs to NumPy arrays
+    # Convert inputs to numpy arrays
     y_true_array = np.asarray(y_true)
     y_score_array = np.asarray(y_score)
 
@@ -49,35 +60,55 @@ def enrichment_factor_score(y_true: npt.ArrayLike, y_score: npt.ArrayLike, fract
     if top_n < 1:
         raise ValueError("The fraction is too small; no top samples are selected. Please increase the fraction.")
 
-    # Sort indices by score in descending order, then select the top_n
-    sort_indices = np.argsort(-y_score_array)  # negative sign to sort in descending order
-    top_indices = sort_indices[:top_n]  # TODO: 同率の場合の処理を追加する
+    # Sort indices by score in descending order
+    sort_indices = np.argsort(-y_score_array)
+    # For "strict", we just take the top_n
+    if tie_handling == "strict":
+        final_top_indices = sort_indices[:top_n]
 
-    # Count how many active samples are in the top range
-    top_actives = np.sum(y_true_array[top_indices])
+    # For "expand", we include all samples that tie with the last selected score
+    else:  # tie_handling == "expand"
+        # First, select top_n
+        temp_top_indices = sort_indices[:top_n]
+        # Score of the boundary sample
+        boundary_score = y_score_array[temp_top_indices[-1]]
+        # Check if there are additional samples (after top_n) with the same score
+        tie_indices = []
+        for idx in sort_indices[top_n:]:
+            if y_score_array[idx] == boundary_score:
+                tie_indices.append(idx)
+            else:
+                break  # because we are in descending order, once we pass the boundary score, we can stop
+
+        final_top_indices = np.concatenate([temp_top_indices, tie_indices]) if tie_indices else temp_top_indices
+
+    # Count how many active samples are in the final top range
+    top_actives = np.sum(y_true_array[final_top_indices])
+    final_top_count = len(final_top_indices)  # may exceed top_n if we expanded
 
     # Compute Enrichment Factor = (active rate in top fraction) / (active rate overall)
-    top_active_ratio = top_actives / top_n
-    overall_active_ratio = total_actives / n_samples
+    top_active_ratio = top_actives / final_top_count
+    overall_active_ratio = total_actives / n_samples if n_samples else 0
 
     # If there are no active samples overall, EF cannot be defined. Return 0.0 or handle as appropriate.
     if overall_active_ratio == 0:
         return 0.0
 
     ef_value = top_active_ratio / overall_active_ratio
-    return float(ef_value)
+    return ef_value
 
 
-# Example usage:
 if __name__ == "__main__":
-    # Example data
+    # Example data with some tied scores
     y_true_example = [1, 1, 0, 1, 0, 1, 0, 0]
-    y_score_example = [0.95, 0.80, 0.78, 0.60, 0.55, 0.40, 0.30, 0.10]
+    y_score_example = [0.80, 0.80, 0.78, 0.78, 0.55, 0.55, 0.30, 0.10]
 
-    # Compute EF at top 10%
-    ef_10 = enrichment_factor_score(y_true_example, y_score_example, fraction=0.1)
-    print("EF(10%):", ef_10)
+    print("Scores:", y_score_example)
 
-    # Compute EF at top 25%
-    ef_25 = enrichment_factor_score(y_true_example, y_score_example, fraction=0.25)
-    print("EF(25%):", ef_25)
+    # Strict approach: top 25% => top 2 samples (since 25% of 8 = 2)
+    ef_strict = enrichment_factor_score(y_true_example, y_score_example, fraction=0.25, tie_handling="strict")
+    print("[strict] EF(25%):", ef_strict)
+
+    # Expand approach: top 25% => top 2 samples, but we see if there's a tie at the boundary
+    ef_expand = enrichment_factor_score(y_true_example, y_score_example, fraction=0.25, tie_handling="expand")
+    print("[expand] EF(25%):", ef_expand)
