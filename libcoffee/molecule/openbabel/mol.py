@@ -17,6 +17,10 @@ class PybelMol(MolBase):
     """
 
     def __init__(self, mol: pybel.Molecule):
+        if not isinstance(mol, pybel.Molecule):
+            raise ValueError(
+                f"The argument of PybelMol constructor should be an instance of openbabel.pybel.Molecule, not {type(mol)}"
+            )
         super().__init__(mol)
 
     @property

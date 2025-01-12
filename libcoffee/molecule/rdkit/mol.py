@@ -14,6 +14,10 @@ class RDKitMol(MolBase):
     """
 
     def __init__(self, mol: Chem.Mol):
+        if not isinstance(mol, Chem.Mol):
+            raise ValueError(
+                f"The argument of RDKitMol constructor should be an instance of rdkit.Chem.Mol, not {type(mol)}"
+            )
         super().__init__(mol)
 
     @property
