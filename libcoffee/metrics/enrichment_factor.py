@@ -115,14 +115,14 @@ if __name__ == "__main__":
 
     # Strict approach: top 25% => top 2 samples
     ef_strict, frac_strict = enrichment_factor_score(
-        y_true_example, y_score_example, fraction=0.25, tie_handling="strict"
+        y_true_example, y_score_example, fraction=0.15, tie_handling="strict"
     )
     print("[strict] EF(25%):", ef_strict)
     print("[strict] Actual fraction used:", frac_strict)
 
     # Expand approach: top 25% => might include more if there's a tie at the boundary
     ef_expand, frac_expand = enrichment_factor_score(
-        y_true_example, y_score_example, fraction=0.25, tie_handling="expand"
+        y_true_example, y_score_example, fraction=0.15, tie_handling="expand"
     )
     print("[expand] EF(25%):", ef_expand)
     print("[expand] Actual fraction used:", frac_expand)
