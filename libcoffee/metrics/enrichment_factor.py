@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -9,9 +9,10 @@ def enrichment_factor_score(
     y_score: npt.ArrayLike,
     fraction: float = 0.01,
     tie_handling: Literal["strict", "expand"] = "strict",
-) -> float:
+) -> Tuple[float, float]:
     """
-    Calculate the Enrichment Factor (EF), with an option to handle tied scores.
+    Calculate the Enrichment Factor (EF), with an option to handle tied scores
+    and return the actual fraction of samples used if ties are expanded.
 
     Parameters
     ----------
@@ -23,14 +24,17 @@ def enrichment_factor_score(
         The fraction (0 < fraction <= 1) of the total samples to consider as "top."
         For example, fraction=0.01 corresponds to the top 1%.
     tie_handling : {"strict", "expand"}, default="strict"
-        "strict" : Select exactly `fraction * n_samples` samples (rounded down).
+        "strict" : Select exactly floor(fraction * n_samples) samples.
         "expand" : If the sample at the boundary ties with the next sample's score,
-                   include all samples with that same score.
+                   include all samples with that same score. This can increase the
+                   effective fraction above the user-specified fraction.
 
     Returns
     -------
-    float
-        The Enrichment Factor (EF) at the specified fraction.
+    ef_value : float
+        The Enrichment Factor (EF) at the specified fraction (or expanded if ties).
+    actual_fraction : float
+        The actual fraction of samples used.
 
     Raises
     ------
@@ -92,10 +96,14 @@ def enrichment_factor_score(
 
     # If there are no active samples overall, EF cannot be defined. Return 0.0 or handle as appropriate.
     if overall_active_ratio == 0:
-        return 0.0
+        ef_value = 0.0
+    else:
+        ef_value = top_active_ratio / overall_active_ratio
 
-    ef_value = top_active_ratio / overall_active_ratio
-    return ef_value
+    # Compute the actual fraction used (might exceed 'fraction' in "expand" mode)
+    actual_fraction = final_top_count / n_samples
+
+    return ef_value, actual_fraction
 
 
 if __name__ == "__main__":
@@ -105,10 +113,16 @@ if __name__ == "__main__":
 
     print("Scores:", y_score_example)
 
-    # Strict approach: top 25% => top 2 samples (since 25% of 8 = 2)
-    ef_strict = enrichment_factor_score(y_true_example, y_score_example, fraction=0.25, tie_handling="strict")
+    # Strict approach: top 25% => top 2 samples
+    ef_strict, frac_strict = enrichment_factor_score(
+        y_true_example, y_score_example, fraction=0.25, tie_handling="strict"
+    )
     print("[strict] EF(25%):", ef_strict)
+    print("[strict] Actual fraction used:", frac_strict)
 
-    # Expand approach: top 25% => top 2 samples, but we see if there's a tie at the boundary
-    ef_expand = enrichment_factor_score(y_true_example, y_score_example, fraction=0.25, tie_handling="expand")
+    # Expand approach: top 25% => might include more if there's a tie at the boundary
+    ef_expand, frac_expand = enrichment_factor_score(
+        y_true_example, y_score_example, fraction=0.25, tie_handling="expand"
+    )
     print("[expand] EF(25%):", ef_expand)
+    print("[expand] Actual fraction used:", frac_expand)
