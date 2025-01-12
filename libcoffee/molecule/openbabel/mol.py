@@ -84,3 +84,12 @@ class PybelMol(MolBase):
         """
         molecules = list(pybel.readfile("sdf", str(file_path)))
         return tuple(cls(mol) for mol in molecules if mol is not None)
+
+    @classmethod
+    def write_sdf(cls, file_path: Path, mols: tuple["MolBase", ...]) -> None:
+        """
+        Writes the given molecules to an SDF file
+        """
+        with open(file_path, "w") as f:
+            for mol in mols:
+                f.write(mol.raw_mol.write("sdf"))

@@ -135,3 +135,11 @@ class MolBase(ABC):
         Reads molecules from an SDF file and returns the molecule objects
         """
         pass
+
+    @classmethod
+    @abstractmethod
+    def write_sdf(cls, file_path: Path, mols: tuple["MolBase", ...]) -> None:
+        """
+        Writes the given molecules to an SDF file
+        """
+        pass

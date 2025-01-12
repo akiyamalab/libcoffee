@@ -76,3 +76,13 @@ class RDKitMol(MolBase):
     def read_sdf(cls, file_path: Path) -> tuple["RDKitMol", ...]:
         suppl = Chem.SDMolSupplier(str(file_path))
         return tuple(RDKitMol(m) for m in suppl if m is not None)
+
+    @classmethod
+    def write_sdf(cls, file_path: Path, mols: tuple["MolBase", ...]) -> None:
+        """
+        Writes the given molecules to an SDF file
+        """
+        writer = Chem.SDWriter(str(file_path))
+        for mol in mols:
+            writer.write(mol.raw_mol)
+        writer.close()
