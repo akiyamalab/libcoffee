@@ -79,6 +79,9 @@ class RDKitMol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
+    def generate_coordinates(self) -> None:
+        raise NotImplementedError
+
     def has_coordinates(self) -> bool:
         return self._mol.GetNumConformers() > 0
 

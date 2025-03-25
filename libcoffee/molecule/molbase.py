@@ -125,6 +125,13 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
+    def generate_coordinates(self: Self) -> None:
+        """
+        Generates 3D coordinates of the molecule.
+        """
+        pass
+
+    @abstractmethod
     def has_coordinates(self: Self) -> bool:
         """
         Returns True if the molecule has 3D coordinates.
