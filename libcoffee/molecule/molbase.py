@@ -56,6 +56,14 @@ class MolBase(ABC):
         """
         pass
 
+    @name.setter
+    @abstractmethod
+    def name(self: Self, name: str) -> None:
+        """
+        Sets the name of the molecule
+        """
+        pass
+
     @property
     @abstractmethod
     def heavy_atom_indices(self: Self) -> npt.NDArray[np.intp]:

@@ -40,6 +40,10 @@ class RDKitMol(MolBase):
     def name(self) -> str:
         return self._mol.GetProp("_Name")  # type: ignore[no-any-return]
 
+    @name.setter
+    def name(self, name: str) -> None:
+        self._mol.SetProp("_Name", name)
+
     @property
     def heavy_atom_indices(self) -> npt.NDArray[np.intp]:
         atomic_nums = [a.GetAtomicNum() for a in self._atoms]

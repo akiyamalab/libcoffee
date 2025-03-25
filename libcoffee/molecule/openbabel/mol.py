@@ -41,6 +41,10 @@ class PybelMol(MolBase):
     def name(self) -> str:
         return self.raw_mol.title  # type: ignore[no-any-return]
 
+    @name.setter
+    def name(self, name: str) -> None:
+        self.raw_mol.title = name
+
     @property
     def heavy_atom_indices(self) -> npt.NDArray[np.intp]:
         unsorted_indices: list[int] = list(set(np.where(np.array([a.atomicnum for a in self.raw_mol.atoms]) > 1)[0]))
