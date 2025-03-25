@@ -125,7 +125,7 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
-    def generate_coordinates(self: Self) -> None:
+    def generate_coordinates(self: Self, temporary_add_hydrogens: bool = False) -> None:
         """
         Generates 3D coordinates of the molecule.
         """

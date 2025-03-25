@@ -80,7 +80,9 @@ class RDKitMol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
-    def generate_coordinates(self) -> None:
+    def generate_coordinates(self, temporary_add_hydrogens: bool = False) -> None:
+        if temporary_add_hydrogens:
+            self._mol = Chem.AddHs(self._mol)
     
         Chem.RemoveStereochemistry(self.raw_mol)
 
@@ -111,6 +113,9 @@ class RDKitMol(MolBase):
 
         Chem.AssignStereochemistry(self.raw_mol, force=True)
         AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)
+
+        if temporary_add_hydrogens:
+            self._mol = Chem.RemoveHs(self._mol)
 
     def has_coordinates(self) -> bool:
         return self._mol.GetNumConformers() > 0
