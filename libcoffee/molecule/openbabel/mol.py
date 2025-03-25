@@ -34,8 +34,8 @@ class PybelMol(MolBase):
         self.raw_mol.atoms = atoms
 
     @property
-    def bonds(self) -> tuple[pybel.Bond, ...]:
-        return tuple(self.raw_mol.bonds)
+    def bonds(self) -> tuple[Any, ...]:
+        raise NotImplementedError
 
     @property
     def isotopes(self) -> npt.NDArray[np.int32]:
