@@ -32,6 +32,14 @@ class MolBase(ABC):
         """
         pass
 
+    @atoms.setter
+    @abstractmethod
+    def _atoms(self: Self, atoms: tuple[Any, ...]) -> None:
+        """
+        Sets the atoms of the molecule
+        """
+        pass
+
     @property
     @abstractmethod
     def bonds(self: Self) -> tuple[Any, ...]:

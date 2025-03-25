@@ -27,6 +27,12 @@ class PybelMol(MolBase):
     def _atoms(self) -> tuple[pybel.Atom, ...]:
         return tuple(self.raw_mol.atoms)
 
+    @atoms.setter
+    def _atoms(self, atoms: tuple[pybel.Atom, ...]) -> None:
+        if len(atoms) != len(self._atoms):
+            raise ValueError("Length of atoms should be equal to the number of atoms")
+        self.raw_mol.atoms = atoms
+
     @property
     def bonds(self) -> tuple[pybel.Bond, ...]:
         return tuple(self.raw_mol.bonds)
