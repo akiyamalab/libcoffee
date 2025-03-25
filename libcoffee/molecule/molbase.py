@@ -5,6 +5,7 @@ from typing import Any, Self
 
 import numpy as np
 import numpy.typing as npt
+import random
 
 
 class MolBase(ABC):
@@ -175,6 +176,27 @@ class MolBase(ABC):
         Isotope numbers of atoms in the given molecule are updated to avoid conflicts.
         """
         pass
+    
+    def annotate_bonds_infomation_to_atoms(self: Self) -> None:
+        """
+        Annotates bond information to atoms
+        """
+        isotopes = self.isotopes
+        for bond in self.bonds:
+            atom1 = bond.GetBeginAtom()
+            atom2 = bond.GetEndAtom()
+
+            if isotopes[atom1.GetIdx()] != isotopes[atom2.GetIdx()]:
+                rand = random.randint(0, 100000)
+                if atom1.HasProp("attachment_point"):
+                    atom1.SetProp("attachment_point", f"{atom1.GetProp("attachment_point")};{str(rand)}")
+                else:
+                    atom1.SetProp("attachment_point", str(rand))
+                
+                if atom2.HasProp("attachment_point"):
+                    atom2.SetProp("attachment_point", f"{atom2.GetProp("attachment_point")};{str(rand)}")
+                else:
+                    atom2.SetProp("attachment_point", str(rand))
 
     def split(self: Self) -> tuple["MolBase", ...]:
         """
@@ -194,6 +216,14 @@ class MolBase(ABC):
         """
         new_mol = copy.deepcopy(self.raw_mol)
         return self.__class__(new_mol)
+    
+    @classmethod
+    @abstractmethod
+    def reconstruct_from_fragments(cls, frags: tuple["MolBase", ...]) -> "MolBase":
+        """
+        Reconstructs a molecule from fragments
+        """
+        pass
 
     @classmethod
     @abstractmethod

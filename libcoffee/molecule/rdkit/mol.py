@@ -148,6 +148,10 @@ class RDKitMol(MolBase):
         
         Chem.SanitizeMol(merged_mol)
         return RDKitMol(merged_mol.GetMol())
+    
+    @classmethod
+    def reconstruct_from_fragments(cls, frags: tuple["RDKitMol", ...]) -> "RDKitMol":
+        raise NotImplementedError
 
     @classmethod
     def from_smiles(cls, smiles: str) -> "RDKitMol":

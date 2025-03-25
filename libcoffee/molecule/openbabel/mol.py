@@ -107,6 +107,10 @@ class PybelMol(MolBase):
             ap1, ap2 = ap1 + 1, ap2 + natoms + 1  # +1: atom index starts from 1
             ret.OBMol.AddBond(ap1, ap2, 1)  # ap1, ap2の間に単結合を追加
         return PybelMol(ret)
+    
+    @classmethod
+    def reconstruct_from_fragments(cls, frags: tuple["PybelMol", ...]) -> "PybelMol":
+        raise NotImplementedError
 
     @classmethod
     def from_smiles(cls, smiles: str) -> "PybelMol":
