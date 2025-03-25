@@ -189,6 +189,14 @@ class MolBase(ABC):
 
     @classmethod
     @abstractmethod
+    def from_smiles(cls, smiles: str) -> "MolBase":
+        """
+        Creates a molecule object from a SMILES string
+        """
+        pass
+
+    @classmethod
+    @abstractmethod
     def read_sdf(cls, file_path: Path) -> tuple["MolBase", ...]:
         """
         Reads molecules from an SDF file and returns the molecule objects

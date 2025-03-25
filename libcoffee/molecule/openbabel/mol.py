@@ -109,6 +109,13 @@ class PybelMol(MolBase):
         return PybelMol(ret)
 
     @classmethod
+    def from_smiles(cls, smiles: str) -> "PybelMol":
+        """
+        Generates a molecule object from SMILES
+        """
+        return cls(pybel.readstring("smi", smiles))
+
+    @classmethod
     def read_sdf(cls, file_path: Path) -> tuple["PybelMol", ...]:
         """
         Reads molecules from an SDF file and returns the molecule objects

@@ -105,6 +105,13 @@ class RDKitMol(MolBase):
         raise NotImplementedError
 
     @classmethod
+    def from_smiles(cls, smiles: str) -> "RDKitMol":
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            raise ValueError(f"Failed to generate a molecule from SMILES: {smiles}")
+        return RDKitMol(mol)
+
+    @classmethod
     def read_sdf(cls, file_path: Path) -> tuple["RDKitMol", ...]:
         suppl = Chem.SDMolSupplier(str(file_path))
         return tuple(RDKitMol(m) for m in suppl if m is not None)
