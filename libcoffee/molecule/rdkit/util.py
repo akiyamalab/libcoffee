@@ -1,0 +1,115 @@
+from abc import ABC, abstractmethod
+from functools import lru_cache
+
+import numpy as np
+import numpy.typing as npt
+from rdkit import Chem
+from rdkit import DataStructs
+from rdkit.Chem import rdMolDescriptors, rdFingerprintGenerator, Crippen, rdMolAlign, rdShapeHelpers
+
+from libcoffee.molecule.rdkit.mol import RDKitMol
+
+# attributetion all max liratery
+
+class SimilarityBase(ABC):
+    """
+    Base class for similarity calculation methods.
+    """
+
+    @classmethod
+    @abstractmethod
+    def calc(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
+        """
+        Calculate the similarity between two mols.
+        """
+        pass
+
+
+class SimilarityNunobe2024(SimilarityBase):
+    """
+    Calculate the similarity between two mols using the Nunobe 2024 similarity calculation method.
+    """
+
+    @classmethod
+    @lru_cache(maxsize=10000)
+    def __calc_mqn_fps(cls, mol: RDKitMol) -> npt.NDArray:
+        return np.array(rdMolDescriptors.MQNs_(mol.raw_mol))
+
+    @classmethod
+    def __calc_mqn_sim(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
+        mqn1 = cls.__calc_mqn_fps(mol1)
+        mqn2 = cls.__calc_mqn_fps(mol2)
+        similarity = 1 / (1 + np.sum(np.abs(mqn1 - mqn2)) / 42)
+        return similarity
+
+    @classmethod
+    @lru_cache(maxsize=10000)
+    def __calc_morgan_fps(cls, mol: RDKitMol, radius=2, bits=2048):
+
+        mfgen = rdFingerprintGenerator.GetMorganGenerator(radius=radius, fpSize=bits)
+        return mfgen.GetFingerprint(mol.raw_mol)
+
+    @classmethod
+    def __calc_morgan_sim(
+        cls, mol1: RDKitMol, mol2: RDKitMol, radius=2, bits=2048
+    ) -> float:
+        morgan_fps1 = cls.__calc_morgan_fps(mol1, radius, bits)
+        morgan_fps2 = cls.__calc_morgan_fps(mol2, radius, bits)
+        return DataStructs.TanimotoSimilarity(morgan_fps1, morgan_fps2)
+
+    @classmethod
+    def calc(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
+        return (cls.__calc_mqn_sim(mol1, mol2) + cls.__calc_morgan_sim(mol1, mol2)) / 2
+
+class SimilarityYoneyama2025(SimilarityBase):
+    """
+    Calculate the similarity between two mols using the Yoneyama 2025 similarity calculation method.
+    """
+
+    @classmethod
+    @lru_cache(maxsize=10000)
+    def __calc_shape_tanimoto(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
+        contribs1 = Crippen.rdMolDescriptors._CalcCrippenContribs(mol1.raw_mol)
+        contribs2 = Crippen.rdMolDescriptors._CalcCrippenContribs(mol2.raw_mol)
+
+        o3a = rdMolAlign.GetCrippenO3A(mol1.raw_mol, mol2.raw_mol, contribs1, contribs2, maxIters=100)
+        o3a.Align()
+
+        match = o3a.Matches()
+        if len(match) == 0:
+            if len(mol1.raw_mol.GetAtoms()) == 1 or len(mol2.raw_mol.GetAtoms()) == 1:
+                rdMolAlign.AlignMol(mol1.raw_mol, mol2.raw_mol, atomMap=[(0, 0)])
+            else:
+                rdMolAlign.AlignMol(mol1.raw_mol, mol2.raw_mol, atomMap=[(0, 0), (1, 1)])
+
+        return 1 - rdShapeHelpers.ShapeTanimotoDist(mol1.raw_mol, mol2.raw_mol)
+
+    @classmethod
+    def calc(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
+        if not mol1.has_coordinates():
+            mol1.generate_coordinates()
+        if not mol2.has_coordinates():
+            mol2.generate_coordinates()
+
+        return cls.__calc_shape_tanimoto(mol1, mol2)
+
+
+def calc_similarities(ref_mol: RDKitMol, target_mols: tuple[RDKitMol], criteria_name: str, attribution: int) -> npt.NDArray:
+    """
+    Calculate the similarities between a reference molecule and target molecules.
+    """
+
+    if criteria_name == "nunobe2024":
+        criteria = SimilarityNunobe2024
+    elif criteria_name == "yoneyama2025":
+        criteria = SimilarityYoneyama2025
+    else:
+        raise ValueError(f"Invalid criteria name: {criteria_name}")
+    
+    similarities = np.array([criteria.calc(ref_mol, target_mol) for target_mol in target_mols])
+    if attribution == 0:
+        max_sim_index = np.argmax(similarities)
+        similarities = np.array(
+            [sim if i == max_sim_index else 0 for i, sim in enumerate(similarities)]
+        )
+    return similarities
