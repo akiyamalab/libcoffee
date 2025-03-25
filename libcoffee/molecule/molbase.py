@@ -1,3 +1,4 @@
+import copy
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Self
@@ -186,6 +187,13 @@ class MolBase(ABC):
             atom_idxs = np.where(self.isotopes == idx)[0]
             frags.append(self.extract_submol(atom_idxs))
         return tuple(frags)
+    
+    def deep_copy(self: Self) -> "MolBase":
+        """
+        Returns a deep copy of the molecule object
+        """
+        new_mol = copy.deepcopy(self.raw_mol)
+        return self.__class__(new_mol)
 
     @classmethod
     @abstractmethod
