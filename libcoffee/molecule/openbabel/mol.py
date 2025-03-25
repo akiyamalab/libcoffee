@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Any, Self
 
@@ -72,11 +74,11 @@ class PybelMol(MolBase):
     def has_coordinates(self) -> bool:
         return all(a.coords is not None for a in self.raw_mol.atoms)
 
-    def add_hydrogens(self) -> "PybelMol":
+    def add_hydrogens(self) -> PybelMol:
         self.raw_mol.addh()
         return self
 
-    def remove_hydrogens(self) -> "PybelMol":
+    def remove_hydrogens(self) -> PybelMol:
         self.raw_mol.removeh()
         return self
 
@@ -96,10 +98,10 @@ class PybelMol(MolBase):
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.raw_mol.data
 
-    def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> "MolBase":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> MolBase:
         raise NotImplementedError
 
-    def merge(self, mol: "PybelMol", aps: tuple[int, int] | None = None) -> "PybelMol":
+    def merge(self, mol: PybelMol, aps: tuple[int, int] | None = None) -> PybelMol:
         natoms = len(self._atoms)
         ret = combine_two_mols(self.raw_mol, mol.raw_mol)
         if aps is not None:
@@ -107,20 +109,20 @@ class PybelMol(MolBase):
             ap1, ap2 = ap1 + 1, ap2 + natoms + 1  # +1: atom index starts from 1
             ret.OBMol.AddBond(ap1, ap2, 1)  # ap1, ap2の間に単結合を追加
         return PybelMol(ret)
-    
+
     @classmethod
-    def reconstruct_from_fragments(cls, frags: tuple["PybelMol", ...]) -> "PybelMol":
+    def reconstruct_from_fragments(cls, frags: tuple[PybelMol, ...]) -> PybelMol:  # type: ignore[override]
         raise NotImplementedError
 
     @classmethod
-    def from_smiles(cls, smiles: str) -> "PybelMol":
+    def from_smiles(cls, smiles: str) -> PybelMol:
         """
         Generates a molecule object from SMILES
         """
         return cls(pybel.readstring("smi", smiles))
 
     @classmethod
-    def read_sdf(cls, file_path: Path) -> tuple["PybelMol", ...]:
+    def read_sdf(cls, file_path: Path) -> tuple[PybelMol, ...]:
         """
         Reads molecules from an SDF file and returns the molecule objects
         """
@@ -128,7 +130,7 @@ class PybelMol(MolBase):
         return tuple(cls(mol) for mol in molecules if mol is not None)
 
     @classmethod
-    def write_sdf(cls, file_path: Path, mols: tuple["MolBase", ...]) -> None:
+    def write_sdf(cls, file_path: Path, mols: tuple[MolBase, ...]) -> None:
         """
         Writes the given molecules to an SDF file
         """

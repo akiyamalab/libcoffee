@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Any
 
@@ -39,7 +41,7 @@ class RDKitMol(MolBase):
     @property
     def isotopes(self) -> npt.NDArray[np.int32]:
         # a.GetIsotope() should return int but typing says return Any
-        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int32)
+        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int32)  # type: ignore[call-arg]
 
     @isotopes.setter
     def isotopes(self, isotopes: npt.NDArray[np.int32]) -> None:
@@ -83,14 +85,14 @@ class RDKitMol(MolBase):
     def generate_coordinates(self, temporary_add_hydrogens: bool = False) -> None:
         if temporary_add_hydrogens:
             self._mol = Chem.AddHs(self._mol)
-    
+
         Chem.RemoveStereochemistry(self.raw_mol)
 
         try:
-            AllChem.EmbedMolecule(self.raw_mol, useRandomCoords=True)  
-            AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  
+            AllChem.EmbedMolecule(self.raw_mol, useRandomCoords=True)
+            AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[call-arg]
         except:
-            pass 
+            pass
 
         params = AllChem.ETKDGv2()
         params.randomSeed = 1
@@ -112,31 +114,31 @@ class RDKitMol(MolBase):
                 count += 1
 
         Chem.AssignStereochemistry(self.raw_mol, force=True)
-        AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)
+        AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[call-arg]
 
         if temporary_add_hydrogens:
             self._mol = Chem.RemoveHs(self._mol)
 
     def has_coordinates(self) -> bool:
-        return self._mol.GetNumConformers() > 0
+        return self._mol.GetNumConformers() > 0  # type: ignore[no-any-return]
 
-    def add_hydrogens(self) -> "RDKitMol":
+    def add_hydrogens(self) -> RDKitMol:
         self._mol = Chem.AddHs(self._mol)
         return self
 
-    def remove_hydrogens(self) -> "RDKitMol":
+    def remove_hydrogens(self) -> RDKitMol:
         self._mol = Chem.RemoveHs(self._mol)
         return self
 
-    def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> "RDKitMol":
+    def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> RDKitMol:
         rw_mol = Chem.RWMol(self.raw_mol)
         idx_remove_atoms = set(range(self.raw_mol.GetNumAtoms())) - set(atom_idxs)
         atomidxs = sorted(idx_remove_atoms)[::-1]
         for idx in atomidxs:
             rw_mol.RemoveAtom(idx)
-        return RDKitMol(rw_mol.GetMol())
+        return RDKitMol(rw_mol.GetMol())  # type: ignore[call-arg]
 
-    def merge(self, mol: "RDKitMol", aps: tuple[int, int] | None = None) -> "RDKitMol":
+    def merge(self, mol: RDKitMol, aps: tuple[int, int] | None = None) -> RDKitMol:
         rwmol = Chem.RWMol(self.raw_mol)
 
         merged_mol = Chem.RWMol(Chem.CombineMols(rwmol, mol.raw_mol))
@@ -145,28 +147,28 @@ class RDKitMol(MolBase):
             idx1, idx2 = aps
             offset = self.raw_mol.GetNumAtoms()
             merged_mol.AddBond(idx1, idx2 + offset, Chem.BondType.SINGLE)
-        
+
         Chem.SanitizeMol(merged_mol)
-        return RDKitMol(merged_mol.GetMol())
-    
+        return RDKitMol(merged_mol.GetMol())  # type: ignore[call-arg]
+
     @classmethod
-    def reconstruct_from_fragments(cls, frags: tuple["RDKitMol", ...]) -> "RDKitMol":
+    def reconstruct_from_fragments(cls, frags: tuple[RDKitMol, ...]) -> RDKitMol:  # type: ignore[override]
         raise NotImplementedError
 
     @classmethod
-    def from_smiles(cls, smiles: str) -> "RDKitMol":
+    def from_smiles(cls, smiles: str) -> RDKitMol:
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:
             raise ValueError(f"Failed to generate a molecule from SMILES: {smiles}")
         return RDKitMol(mol)
 
     @classmethod
-    def read_sdf(cls, file_path: Path) -> tuple["RDKitMol", ...]:
+    def read_sdf(cls, file_path: Path) -> tuple[RDKitMol, ...]:
         suppl = Chem.SDMolSupplier(str(file_path))
         return tuple(RDKitMol(m) for m in suppl if m is not None)
 
     @classmethod
-    def write_sdf(cls, file_path: Path, mols: tuple["MolBase", ...]) -> None:
+    def write_sdf(cls, file_path: Path, mols: tuple[MolBase, ...]) -> None:
         """
         Writes the given molecules to an SDF file
         """
