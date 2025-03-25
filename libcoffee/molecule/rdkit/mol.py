@@ -79,6 +79,9 @@ class RDKitMol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
+    def has_coordinates(self) -> bool:
+        return self._mol.GetNumConformers() > 0
+
     def add_hydrogens(self) -> "RDKitMol":
         self._mol = Chem.AddHs(self._mol)
         return self

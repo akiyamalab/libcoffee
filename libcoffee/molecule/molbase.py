@@ -125,6 +125,13 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
+    def has_coordinates(self: Self) -> bool:
+        """
+        Returns True if the molecule has 3D coordinates.
+        """
+        pass
+
+    @abstractmethod
     def remove_hydrogens(self: Self) -> "MolBase":
         """
         Removes hydrogen atoms from the molecule.
