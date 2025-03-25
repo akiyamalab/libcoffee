@@ -18,11 +18,26 @@ class SimilarityBase(ABC):
 
     @classmethod
     @abstractmethod
-    def calc(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
+    def calc(cls, mol1: RDKitMol, mol2: RDKitMol, prealigned: bool = True) -> float:
         """
         Calculate the similarity between two mols.
         """
         pass
+
+    @classmethod
+    def aligne_mols(cls, ref_mol: RDKitMol, target_mol: RDKitMol) -> None:
+        contribs1 = Crippen.rdMolDescriptors._CalcCrippenContribs(ref_mol.raw_mol)
+        contribs2 = Crippen.rdMolDescriptors._CalcCrippenContribs(target_mol.raw_mol)
+
+        o3a = rdMolAlign.GetCrippenO3A(ref_mol.raw_mol, target_mol.raw_mol, contribs1, contribs2, maxIters=100)
+        o3a.Align()
+
+        match = o3a.Matches()
+        if len(match) == 0:
+            if len(ref_mol.raw_mol.GetAtoms()) == 1 or len(target_mol.raw_mol.GetAtoms()) == 1:
+                rdMolAlign.AlignMol(ref_mol.raw_mol, target_mol.raw_mol, atomMap=[(0, 0)])
+            else:
+                rdMolAlign.AlignMol(ref_mol.raw_mol, target_mol.raw_mol, atomMap=[(0, 0), (1, 1)])
 
 
 class SimilarityNunobe2024(SimilarityBase):
@@ -58,7 +73,7 @@ class SimilarityNunobe2024(SimilarityBase):
         return DataStructs.TanimotoSimilarity(morgan_fps1, morgan_fps2)
 
     @classmethod
-    def calc(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
+    def calc(cls, mol1: RDKitMol, mol2: RDKitMol, prealigned: bool = True) -> float:
         return (cls.__calc_mqn_sim(mol1, mol2) + cls.__calc_morgan_sim(mol1, mol2)) / 2
 
 class SimilarityYoneyama2025(SimilarityBase):
@@ -69,32 +84,22 @@ class SimilarityYoneyama2025(SimilarityBase):
     @classmethod
     @lru_cache(maxsize=10000)
     def __calc_shape_tanimoto(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
-        contribs1 = Crippen.rdMolDescriptors._CalcCrippenContribs(mol1.raw_mol)
-        contribs2 = Crippen.rdMolDescriptors._CalcCrippenContribs(mol2.raw_mol)
-
-        o3a = rdMolAlign.GetCrippenO3A(mol1.raw_mol, mol2.raw_mol, contribs1, contribs2, maxIters=100)
-        o3a.Align()
-
-        match = o3a.Matches()
-        if len(match) == 0:
-            if len(mol1.raw_mol.GetAtoms()) == 1 or len(mol2.raw_mol.GetAtoms()) == 1:
-                rdMolAlign.AlignMol(mol1.raw_mol, mol2.raw_mol, atomMap=[(0, 0)])
-            else:
-                rdMolAlign.AlignMol(mol1.raw_mol, mol2.raw_mol, atomMap=[(0, 0), (1, 1)])
-
         return 1 - rdShapeHelpers.ShapeTanimotoDist(mol1.raw_mol, mol2.raw_mol)
 
     @classmethod
-    def calc(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
-        if not mol1.has_coordinates():
-            mol1.generate_coordinates()
-        if not mol2.has_coordinates():
-            mol2.generate_coordinates()
+    def calc(cls, mol1: RDKitMol, mol2: RDKitMol, prealigned: bool = True) -> float:
+        if not mol1.has_coordinates() or not mol2.has_coordinates():
+            raise ValueError("Molecules must have coordinates to calculate the similarity.")
+        
+        mol2_deepcopy = mol2.deep_copy()
+        
+        if prealigned:
+            cls.aligne_mols(mol1, mol2_deepcopy)
 
-        return cls.__calc_shape_tanimoto(mol1, mol2)
+        return cls.__calc_shape_tanimoto(mol1, mol2_deepcopy)
 
 
-def calc_similarities(ref_mol: RDKitMol, target_mols: tuple[RDKitMol], criteria_name: str, attribution: int) -> npt.NDArray:
+def calc_similarities(ref_mol: RDKitMol, target_mols: tuple[RDKitMol], criteria_name: str, attribution: int, prealigned: bool = True) -> npt.NDArray:
     """
     Calculate the similarities between a reference molecule and target molecules.
     """
@@ -106,7 +111,7 @@ def calc_similarities(ref_mol: RDKitMol, target_mols: tuple[RDKitMol], criteria_
     else:
         raise ValueError(f"Invalid criteria name: {criteria_name}")
     
-    similarities = np.array([criteria.calc(ref_mol, target_mol) for target_mol in target_mols])
+    similarities = np.array([criteria.calc(ref_mol, target_mol, prealigned) for target_mol in target_mols])
     if attribution == 0:
         max_sim_index = np.argmax(similarities)
         similarities = np.array(
