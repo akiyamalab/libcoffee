@@ -4,6 +4,7 @@ from typing import Any
 import numpy as np
 import numpy.typing as npt
 from rdkit import Chem
+from rdkit.Chem import AllChem
 
 from libcoffee.molecule.molbase import MolBase
 
@@ -80,7 +81,36 @@ class RDKitMol(MolBase):
         return coords
 
     def generate_coordinates(self) -> None:
-        raise NotImplementedError
+    
+        Chem.RemoveStereochemistry(self.raw_mol)
+
+        try:
+            AllChem.EmbedMolecule(self.raw_mol, useRandomCoords=True)  
+            AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  
+        except:
+            pass 
+
+        params = AllChem.ETKDGv2()
+        params.randomSeed = 1
+        params.numThreads = 50
+        params.pruneRmsThresh = 0.1
+        params.useRandomCoords = True
+        params.maxAttempts = 1000
+
+        count = 0
+        while count < 10:
+            try:
+                conformers = AllChem.EmbedMultipleConfs(self.raw_mol, numConfs=10, params=params)
+
+                if len(conformers) == 0:
+                    raise ValueError(f"Conformer の生成に失敗しました. {self.name}")
+                break
+            except ValueError:
+                params.randomSeed += 1
+                count += 1
+
+        Chem.AssignStereochemistry(self.raw_mol, force=True)
+        AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)
 
     def has_coordinates(self) -> bool:
         return self._mol.GetNumConformers() > 0
