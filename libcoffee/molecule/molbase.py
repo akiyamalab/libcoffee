@@ -87,6 +87,13 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
+    def set_attr(self: Self, attr_name: str, value: Any) -> None:
+        """
+        Sets the value of the attribute with the given name
+        """
+        pass
+
+    @abstractmethod
     def has_attr(self, attr_name: str) -> bool:
         """
         Returns True if the molecule has an attribute with the given name

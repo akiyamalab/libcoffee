@@ -55,6 +55,9 @@ class RDKitMol(MolBase):
     def get_attr(self, attr_name: str) -> Any:
         return self._mol.GetProp(attr_name)
 
+    def set_attr(self, attr_name: str, value: Any) -> None:
+        self._mol.SetProp(attr_name, str(value))
+
     def has_attr(self, attr_name: str) -> bool:
         return self._mol.HasProp(attr_name)  # type: ignore[no-any-return]
 

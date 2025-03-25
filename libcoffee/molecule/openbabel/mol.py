@@ -66,6 +66,9 @@ class PybelMol(MolBase):
     def get_attr(self, attr_name: str) -> Any:
         return self.raw_mol.data[attr_name]
 
+    def set_attr(self, attr_name: str, value: Any) -> None:
+        self.raw_mol.data[attr_name] = value
+
     def has_attr(self, attr_name: str) -> bool:
         return attr_name in self.raw_mol.data
 
