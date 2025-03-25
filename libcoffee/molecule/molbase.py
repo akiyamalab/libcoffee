@@ -125,6 +125,20 @@ class MolBase(ABC):
         pass
 
     @abstractmethod
+    def remove_hydrogens(self: Self) -> "MolBase":
+        """
+        Removes hydrogen atoms from the molecule.
+        """
+        pass
+
+    @abstractmethod
+    def add_hydrogens(self: Self) -> "MolBase":
+        """
+        Adds hydrogen atoms to the molecule.
+        """
+        pass
+
+    @abstractmethod
     def extract_submol(self: Self, atom_idxs: npt.NDArray[np.intp]) -> "MolBase":
         """
         Extracts a substructure molecule from the original molecule with the given atom indices.

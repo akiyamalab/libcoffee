@@ -66,6 +66,14 @@ class PybelMol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
+    def add_hydrogens(self) -> "PybelMol":
+        self.raw_mol.addh()
+        return self
+
+    def remove_hydrogens(self) -> "PybelMol":
+        self.raw_mol.removeh()
+        return self
+
     def get_smiles(self, kekulize: bool = False) -> str:
         obConversion = OBConversion()
         obConversion.SetOutFormat("can")

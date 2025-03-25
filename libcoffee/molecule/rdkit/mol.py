@@ -79,6 +79,14 @@ class RDKitMol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
+    def add_hydrogens(self) -> "RDKitMol":
+        self._mol = Chem.AddHs(self._mol)
+        return self
+
+    def remove_hydrogens(self) -> "RDKitMol":
+        self._mol = Chem.RemoveHs(self._mol)
+        return self
+
     def extract_submol(self, atom_idxs: npt.NDArray[np.intp]) -> "RDKitMol":
         rw_mol = Chem.RWMol(self.raw_mol)
         idx_remove_atoms = set(range(self.raw_mol.GetNumAtoms())) - set(atom_idxs)
