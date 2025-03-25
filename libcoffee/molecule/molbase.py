@@ -32,7 +32,7 @@ class MolBase(ABC):
         """
         pass
 
-    @atoms.setter
+    @_atoms.setter
     @abstractmethod
     def _atoms(self: Self, atoms: tuple[Any, ...]) -> None:
         """

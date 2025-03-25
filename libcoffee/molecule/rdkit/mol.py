@@ -24,7 +24,7 @@ class RDKitMol(MolBase):
     def _atoms(self) -> tuple[Chem.Atom, ...]:
         return tuple(m for m in self._mol.GetAtoms())
 
-    @atoms.setter
+    @_atoms.setter
     def _atoms(self, atoms: tuple[Chem.Atom, ...]) -> None:
         if len(atoms) != len(self._atoms):
             raise ValueError("Length of atoms should be equal to the number of atoms")
