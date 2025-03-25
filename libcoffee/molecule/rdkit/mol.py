@@ -25,6 +25,10 @@ class RDKitMol(MolBase):
         return tuple(m for m in self._mol.GetAtoms())
 
     @property
+    def bonds(self) -> tuple[Chem.Bond, ...]:
+        return tuple(b for b in self._mol.GetBonds())
+
+    @property
     def isotopes(self) -> npt.NDArray[np.int32]:
         # a.GetIsotope() should return int but typing says return Any
         return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int32)

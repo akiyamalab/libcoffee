@@ -28,6 +28,10 @@ class PybelMol(MolBase):
         return tuple(self.raw_mol.atoms)
 
     @property
+    def bonds(self) -> tuple[pybel.Bond, ...]:
+        return tuple(self.raw_mol.bonds)
+
+    @property
     def isotopes(self) -> npt.NDArray[np.int32]:
         return np.array([a.isotope for a in self._atoms], dtype=np.int32)
 

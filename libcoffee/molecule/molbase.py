@@ -34,6 +34,14 @@ class MolBase(ABC):
 
     @property
     @abstractmethod
+    def bonds(self: Self) -> tuple[Any, ...]:
+        """
+        Returns a list of bonds in the molecule.
+        """
+        pass
+
+    @property
+    @abstractmethod
     def isotopes(self: Self) -> npt.NDArray[np.int32]:
         """
         Returns a list of isotope numbers of atoms in the molecule
