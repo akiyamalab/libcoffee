@@ -137,7 +137,17 @@ class RDKitMol(MolBase):
         return RDKitMol(rw_mol.GetMol())
 
     def merge(self, mol: "RDKitMol", aps: tuple[int, int] | None = None) -> "RDKitMol":
-        raise NotImplementedError
+        rwmol = Chem.RWMol(self.raw_mol)
+
+        merged_mol = Chem.RWMol(Chem.CombineMols(rwmol, mol.raw_mol))
+
+        if aps is not None:
+            idx1, idx2 = aps
+            offset = self.raw_mol.GetNumAtoms()
+            merged_mol.AddBond(idx1, idx2 + offset, Chem.BondType.SINGLE)
+        
+        Chem.SanitizeMol(merged_mol)
+        return RDKitMol(merged_mol.GetMol())
 
     @classmethod
     def from_smiles(cls, smiles: str) -> "RDKitMol":
