@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from rdkit import Chem
 
-from libcoffee.molecule.rdkit.mol import RDKitMol
+from libcoffee.rdkittools import RDKitMol
 
 
 class TestMolFromSmiles:

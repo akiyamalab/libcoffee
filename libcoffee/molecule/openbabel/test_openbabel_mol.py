@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from openbabel import pybel
 
-from libcoffee.molecule.openbabel.mol import PybelMol
+from libcoffee.openbabeltools import PybelMol
 
 
 class TestMolFromSmiles:
