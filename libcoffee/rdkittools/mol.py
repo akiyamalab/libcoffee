@@ -8,7 +8,7 @@ import numpy.typing as npt
 from rdkit import Chem
 from rdkit.Chem import AllChem
 
-from libcoffee.molecule.molbase import MolBase
+from libcoffee.core.molbase import MolBase
 
 
 class RDKitMol(MolBase):

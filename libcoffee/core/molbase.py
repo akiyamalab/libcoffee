@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import copy
+import random
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Self
 
 import numpy as np
 import numpy.typing as npt
-import random
 
 
 class MolBase(ABC):
@@ -178,7 +178,7 @@ class MolBase(ABC):
         Isotope numbers of atoms in the given molecule are updated to avoid conflicts.
         """
         pass
-    
+
     def annotate_bonds_infomation_to_atoms(self: Self) -> None:
         """
         Annotates bond information to atoms
@@ -194,7 +194,7 @@ class MolBase(ABC):
                     atom1.SetProp("attachment_point", f"{atom1.GetProp("attachment_point")};{str(rand)}")
                 else:
                     atom1.SetProp("attachment_point", str(rand))
-                
+
                 if atom2.HasProp("attachment_point"):
                     atom2.SetProp("attachment_point", f"{atom2.GetProp("attachment_point")};{str(rand)}")
                 else:
@@ -211,14 +211,14 @@ class MolBase(ABC):
             atom_idxs = np.where(self.isotopes == idx)[0]
             frags.append(self.extract_submol(atom_idxs))
         return tuple(frags)
-    
+
     def deep_copy(self: Self) -> MolBase:
         """
         Returns a deep copy of the molecule object
         """
         new_mol = copy.deepcopy(self.raw_mol)
         return self.__class__(new_mol)
-    
+
     @classmethod
     @abstractmethod
     def reconstruct_from_fragments(cls, frags: tuple[MolBase, ...]) -> MolBase:

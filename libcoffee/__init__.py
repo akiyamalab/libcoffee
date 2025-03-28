@@ -1,3 +1,3 @@
-from . import common, docking, fragment, molecule
+from . import common, core, docking, fragment, openbabeltools, rdkittools
 
 __version__ = "0.3.0"

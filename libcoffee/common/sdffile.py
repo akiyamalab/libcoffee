@@ -1,13 +1,17 @@
+from pathlib import Path
 from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
 from typing import Generator
 
 from libcoffee.common.path import SDFFile
 
 
-def SubSDFFileGenerator(file: SDFFile, n_cmpds_per_file: int = -1) -> Generator[_TemporaryFileWrapper[str], None, None]:
+def SubSDFFileGenerator(
+    file: str | Path | SDFFile, n_cmpds_per_file: int = -1
+) -> Generator[_TemporaryFileWrapper[str], None, None]:
     """
     SDFファイルを分割するためのジェネレータ。tempfile.NamedTemporaryFileを返す。
     """
+    file = SDFFile(file)
     with open(file) as fin:
         n_cmpds = 0
         fout = NamedTemporaryFile(mode="w", suffix=".sdf")

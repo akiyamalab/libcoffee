@@ -6,7 +6,7 @@ import numpy.typing as npt
 from rdkit import Chem, DataStructs
 from rdkit.Chem import Crippen, rdFingerprintGenerator, rdMolAlign, rdMolDescriptors, rdShapeHelpers
 
-from libcoffee.molecule.rdkit.mol import RDKitMol
+from libcoffee.rdkittools.mol import RDKitMol
 
 # attributetion all max liratery
 
