@@ -68,7 +68,7 @@ class PybelMol(MolBase):
             coords = coords[self.heavy_atom_indices]
         return coords
 
-    def generate_coordinates(self, temporary_add_hydrogens: bool = True) -> None:
+    def generate_coordinates(self, temporary_add_hydrogens: bool = False) -> None:
         raise NotImplementedError
 
     def has_coordinates(self) -> bool:
