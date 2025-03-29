@@ -10,7 +10,7 @@ from libcoffee.rdkittools import RDKitMol
 class TestMolFromSmiles:
     @pytest.fixture
     def init(self: Self) -> None:
-        molobj: Chem.Mol = Chem.MolFromSmiles("c1ccccc1 benzene")  # type: ignore[assignment]
+        molobj: Chem.Mol = Chem.MolFromSmiles("c1ccccc1 benzene")
         self.mol = RDKitMol(molobj)
 
     def test_isotopes(self: Self, init: Any) -> None:

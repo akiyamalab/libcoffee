@@ -67,7 +67,7 @@ class SimilarityNunobe2024(SimilarityBase):
     def __calc_morgan_sim(cls, mol1: RDKitMol, mol2: RDKitMol, radius: int = 2, bits: int = 2048) -> float:
         morgan_fps1 = cls.__calc_morgan_fps(mol1, radius, bits)
         morgan_fps2 = cls.__calc_morgan_fps(mol2, radius, bits)
-        return DataStructs.TanimotoSimilarity(morgan_fps1, morgan_fps2)  # type: ignore[attr-defined, no-any-return]
+        return DataStructs.TanimotoSimilarity(morgan_fps1, morgan_fps2)
 
     @classmethod
     def calc(cls, mol1: RDKitMol, mol2: RDKitMol, prealigned: bool = True) -> float:
@@ -82,7 +82,7 @@ class SimilarityYoneyama2025(SimilarityBase):
     @classmethod
     @lru_cache(maxsize=10000)
     def __calc_shape_tanimoto(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
-        return 1 - rdShapeHelpers.ShapeTanimotoDist(mol1.raw_mol, mol2.raw_mol)  # type: ignore[no-any-return]
+        return 1 - rdShapeHelpers.ShapeTanimotoDist(mol1.raw_mol, mol2.raw_mol)
 
     @classmethod
     def calc(cls, mol1: RDKitMol, mol2: RDKitMol, prealigned: bool = True) -> float:

@@ -41,7 +41,7 @@ class RDKitMol(MolBase):
     @property
     def isotopes(self) -> npt.NDArray[np.int32]:
         # a.GetIsotope() should return int but typing says return Any
-        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int32)  # type: ignore[call-arg]
+        return np.array([a.GetIsotope() for a in self._atoms], dtype=np.int32)
 
     @isotopes.setter
     def isotopes(self, isotopes: npt.NDArray[np.int32]) -> None:
@@ -89,12 +89,12 @@ class RDKitMol(MolBase):
         Chem.RemoveStereochemistry(self.raw_mol)
 
         try:
-            AllChem.EmbedMolecule(self.raw_mol, useRandomCoords=True)
-            AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[call-arg]
+            AllChem.EmbedMolecule(self.raw_mol, useRandomCoords=True)  # type: ignore[attr-defined]
+            AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[attr-defined]
         except:
             pass
 
-        params = AllChem.ETKDGv2()
+        params = AllChem.ETKDGv2()  # type: ignore[attr-defined]
         params.randomSeed = 1
         params.numThreads = 50
         params.pruneRmsThresh = 0.1
@@ -104,7 +104,7 @@ class RDKitMol(MolBase):
         count = 0
         while count < 10:
             try:
-                conformers = AllChem.EmbedMultipleConfs(self.raw_mol, numConfs=10, params=params)
+                conformers = AllChem.EmbedMultipleConfs(self.raw_mol, numConfs=10, params=params)  # type: ignore[attr-defined]
 
                 if len(conformers) == 0:
                     raise ValueError(f"Conformer の生成に失敗しました. {self.name}")
@@ -114,7 +114,7 @@ class RDKitMol(MolBase):
                 count += 1
 
         Chem.AssignStereochemistry(self.raw_mol, force=True)
-        AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[call-arg]
+        AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[attr-defined]
 
         if temporary_add_hydrogens:
             self._mol = Chem.RemoveHs(self._mol)
@@ -136,7 +136,7 @@ class RDKitMol(MolBase):
         atomidxs = sorted(idx_remove_atoms)[::-1]
         for idx in atomidxs:
             rw_mol.RemoveAtom(idx)
-        return RDKitMol(rw_mol.GetMol())  # type: ignore[call-arg]
+        return RDKitMol(rw_mol.GetMol())
 
     def merge(self, mol: RDKitMol, aps: tuple[int, int] | None = None) -> RDKitMol:
         rwmol = Chem.RWMol(self.raw_mol)
@@ -149,7 +149,7 @@ class RDKitMol(MolBase):
             merged_mol.AddBond(idx1, idx2 + offset, Chem.BondType.SINGLE)
 
         Chem.SanitizeMol(merged_mol)
-        return RDKitMol(merged_mol.GetMol())  # type: ignore[call-arg]
+        return RDKitMol(merged_mol.GetMol())
 
     @classmethod
     def reconstruct_from_fragments(cls, frags: tuple[RDKitMol, ...]) -> RDKitMol:  # type: ignore[override]
