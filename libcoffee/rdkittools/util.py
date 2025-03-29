@@ -24,21 +24,6 @@ class SimilarityBase(ABC):
         """
         pass
 
-    @classmethod
-    def aligne_mols(cls, ref_mol: RDKitMol, target_mol: RDKitMol) -> None:
-        contribs1 = Crippen.rdMolDescriptors._CalcCrippenContribs(ref_mol.raw_mol)
-        contribs2 = Crippen.rdMolDescriptors._CalcCrippenContribs(target_mol.raw_mol)
-
-        o3a = rdMolAlign.GetCrippenO3A(ref_mol.raw_mol, target_mol.raw_mol, contribs1, contribs2, maxIters=100)
-        o3a.Align()
-
-        match = o3a.Matches()
-        if len(match) == 0:
-            if len(ref_mol.raw_mol.GetAtoms()) == 1 or len(target_mol.raw_mol.GetAtoms()) == 1:
-                rdMolAlign.AlignMol(ref_mol.raw_mol, target_mol.raw_mol, atomMap=[(0, 0)])
-            else:
-                rdMolAlign.AlignMol(ref_mol.raw_mol, target_mol.raw_mol, atomMap=[(0, 0), (1, 1)])
-
 
 class SimilarityNunobe2024(SimilarityBase):
     """
@@ -80,6 +65,21 @@ class SimilarityYoneyama2025(SimilarityBase):
     """
 
     @classmethod
+    def align_mols(cls, ref_mol: RDKitMol, target_mol: RDKitMol) -> None:
+        contribs1 = Crippen.rdMolDescriptors._CalcCrippenContribs(ref_mol.raw_mol)
+        contribs2 = Crippen.rdMolDescriptors._CalcCrippenContribs(target_mol.raw_mol)
+
+        o3a = rdMolAlign.GetCrippenO3A(ref_mol.raw_mol, target_mol.raw_mol, contribs1, contribs2, maxIters=100)
+        o3a.Align()
+
+        match = o3a.Matches()
+        if len(match) == 0:
+            if len(ref_mol.raw_mol.GetAtoms()) == 1 or len(target_mol.raw_mol.GetAtoms()) == 1:
+                rdMolAlign.AlignMol(ref_mol.raw_mol, target_mol.raw_mol, atomMap=[(0, 0)])
+            else:
+                rdMolAlign.AlignMol(ref_mol.raw_mol, target_mol.raw_mol, atomMap=[(0, 0), (1, 1)])
+
+    @classmethod
     @lru_cache(maxsize=10000)
     def __calc_shape_tanimoto(cls, mol1: RDKitMol, mol2: RDKitMol) -> float:
         return 1 - rdShapeHelpers.ShapeTanimotoDist(mol1.raw_mol, mol2.raw_mol)
@@ -92,7 +92,7 @@ class SimilarityYoneyama2025(SimilarityBase):
         mol2_deepcopy = mol2.deep_copy()
 
         if prealigned:
-            cls.aligne_mols(mol1, mol2_deepcopy)  # type: ignore[arg-type]
+            cls.align_mols(mol1, mol2_deepcopy)  # type: ignore[arg-type]
 
         return cls.__calc_shape_tanimoto(mol1, mol2_deepcopy)
 
