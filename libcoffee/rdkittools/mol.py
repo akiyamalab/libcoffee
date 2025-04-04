@@ -86,8 +86,6 @@ class RDKitMol(MolBase):
         if temporary_add_hydrogens:
             self._mol = Chem.AddHs(self._mol)
 
-        Chem.RemoveStereochemistry(self.raw_mol)
-
         try:
             AllChem.EmbedMolecule(self.raw_mol, useRandomCoords=True)  # type: ignore[attr-defined]
             AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[attr-defined]
@@ -113,7 +111,6 @@ class RDKitMol(MolBase):
                 params.randomSeed += 1
                 count += 1
 
-        Chem.AssignStereochemistry(self.raw_mol, force=True)
         AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[attr-defined]
 
         if temporary_add_hydrogens:
