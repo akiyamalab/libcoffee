@@ -101,15 +101,15 @@ class RDKitMol(MolBase):
 
         count = 0
         while count < 10:
-            try:
-                conformers = AllChem.EmbedMultipleConfs(self.raw_mol, numConfs=10, params=params)  # type: ignore[attr-defined]
+            conformers = AllChem.EmbedMultipleConfs(self.raw_mol, numConfs=10, params=params)  # type: ignore[attr-defined]
 
-                if len(conformers) == 0:
-                    raise ValueError(f"Conformer の生成に失敗しました. {self.name}")
-                break
-            except ValueError:
-                params.randomSeed += 1
+            if len(conformers) == 0:
                 count += 1
+                params.randomSeed += 1   
+            break
+
+        if len(conformers) == 0:
+            raise ValueError(f"Failed to generate coordinates. {self.name}")
 
         AllChem.UFFOptimizeMolecule(self.raw_mol, maxIters=100)  # type: ignore[attr-defined]
 
