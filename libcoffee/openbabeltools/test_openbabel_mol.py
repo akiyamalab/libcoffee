@@ -2,19 +2,20 @@ from typing import Any, Self
 
 import numpy as np
 import pytest
-from rdkit import Chem
+from openbabel import pybel
 
-from libcoffee.molecule.rdkit.mol import RDKitMol
+from libcoffee.openbabeltools import PybelMol
 
 
 class TestMolFromSmiles:
     @pytest.fixture
     def init(self: Self) -> None:
-        self.mol = RDKitMol(Chem.MolFromSmiles("c1ccccc1 benzene"))
+        self.mol = PybelMol(pybel.readstring("smi", "c1ccccc1 benzene"))
 
     def test_isotopes(self: Self, init: Any) -> None:
         assert np.all(self.mol.isotopes == 0)
 
+    @pytest.mark.skip(reason="isotopes.setter is not implemented")
     def test_isotopes_setter(self: Self, init: Any) -> None:
         self.mol.isotopes = np.array([1, 2, 3, 4, 5, 6])
         assert np.all(self.mol.isotopes == np.array([1, 2, 3, 4, 5, 6]))

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Final
 
-from libcoffee.molecule.molbase import MolBase
+from libcoffee.core.molbase import MolBase
 
 
 @dataclass(frozen=True)
