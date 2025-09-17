@@ -191,12 +191,12 @@ class MolBase(ABC):
             if isotopes[atom1.GetIdx()] != isotopes[atom2.GetIdx()]:
                 rand = random.randint(0, 100000)
                 if atom1.HasProp("attachment_point"):
-                    atom1.SetProp("attachment_point", f"{atom1.GetProp("attachment_point")};{str(rand)}")
+                    atom1.SetProp("attachment_point", f"{atom1.GetProp('attachment_point')};{str(rand)}")
                 else:
                     atom1.SetProp("attachment_point", str(rand))
 
                 if atom2.HasProp("attachment_point"):
-                    atom2.SetProp("attachment_point", f"{atom2.GetProp("attachment_point")};{str(rand)}")
+                    atom2.SetProp("attachment_point", f"{atom2.GetProp('attachment_point')};{str(rand)}")
                 else:
                     atom2.SetProp("attachment_point", str(rand))
 
