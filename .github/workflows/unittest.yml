@@ -3,34 +3,22 @@ name: unittest
 on: [push]
 
 jobs:
-  buildx:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-      - name: Build
-        uses: docker/build-push-action@master
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          context: .devcontainer
-          tags: libcoffee
-          push: false
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -e ".[dev]" -c constraints.txt
 
       - name: Type check
-        uses: addnab/docker-run-action@v3
-        with:
-          image: libcoffee
-          options: -v ${{ github.workspace }}:/work
-          run: |
-            cd /work
-            pip install -e .
-            mypy --strict -p libcoffee --explicit-package-bases
+        run: mypy --strict -p libcoffee --explicit-package-bases
 
       - name: Unittest
-        uses: addnab/docker-run-action@v3
-        with:
-          image: libcoffee
-          options: -v ${{ github.workspace }}:/work
-          run: |
-            cd /work
-            pip install -e .
-            python -m pytest .
+        run: python -m pytest .
