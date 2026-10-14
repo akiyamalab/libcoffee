@@ -1,33 +1,45 @@
-import sys
+import os
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Self
+from typing import ClassVar
 
 
-class SDFFile(Path):
-    if sys.version_info < (3, 12):  # Path cannot be subclassed directly before 3.12
-        _flavour = type(Path())._flavour  # type: ignore[attr-defined]
+@dataclass(frozen=True, init=False)
+class _TypedFile(os.PathLike[str]):
+    """
+    A file path whose suffix is restricted to `_suffix`.
+    This class does not inherit Path; use `.path` for path operations (their results are plain Path objects).
+    It can be passed to open(), shutil, subprocess, etc. via os.PathLike.
+    """
 
-    def __new__(cls, file: Path | str) -> Self:
-        if Path(file).suffix != ".sdf":
-            raise ValueError(f"File {file} is not a SDF file")
-        return super().__new__(cls, file)
+    _suffix: ClassVar[str]
+    _format: ClassVar[str]
+    path: Path
+
+    def __init__(self, file: str | os.PathLike[str]) -> None:
+        path = Path(file)
+        if path.suffix != self._suffix:
+            raise ValueError(f"File {file} is not a {self._format} file")
+        object.__setattr__(self, "path", path)
+
+    def __fspath__(self) -> str:
+        return os.fspath(self.path)
+
+    def __str__(self) -> str:
+        # used when embedded in command lines via str() or f-strings
+        return str(self.path)
 
 
-class PDBFile(Path):
-    if sys.version_info < (3, 12):  # Path cannot be subclassed directly before 3.12
-        _flavour = type(Path())._flavour  # type: ignore[attr-defined]
-
-    def __new__(cls, file: Path | str) -> Self:
-        if Path(file).suffix != ".pdb":
-            raise ValueError(f"File {file} is not a PDB file")
-        return super().__new__(cls, file)
+class SDFFile(_TypedFile):
+    _suffix = ".sdf"
+    _format = "SDF"
 
 
-class FBDBFile(Path):
-    if sys.version_info < (3, 12):  # Path cannot be subclassed directly before 3.12
-        _flavour = type(Path())._flavour  # type: ignore[attr-defined]
+class PDBFile(_TypedFile):
+    _suffix = ".pdb"
+    _format = "PDB"
 
-    def __new__(cls, file: Path | str) -> Self:
-        if Path(file).suffix != ".fbdb":
-            raise ValueError(f"File {file} is not a FBDB file")
-        return super().__new__(cls, file)
+
+class FBDBFile(_TypedFile):
+    _suffix = ".fbdb"
+    _format = "FBDB"
