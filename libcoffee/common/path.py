@@ -1,9 +1,11 @@
+import sys
 from pathlib import Path
 from typing import Self
 
 
 class SDFFile(Path):
-    _flavour = type(Path())._flavour  # type: ignore[attr-defined]
+    if sys.version_info < (3, 12):  # Path cannot be subclassed directly before 3.12
+        _flavour = type(Path())._flavour  # type: ignore[attr-defined]
 
     def __new__(cls, file: Path | str) -> Self:
         if Path(file).suffix != ".sdf":
@@ -12,7 +14,8 @@ class SDFFile(Path):
 
 
 class PDBFile(Path):
-    _flavour = type(Path())._flavour  # type: ignore[attr-defined]
+    if sys.version_info < (3, 12):  # Path cannot be subclassed directly before 3.12
+        _flavour = type(Path())._flavour  # type: ignore[attr-defined]
 
     def __new__(cls, file: Path | str) -> Self:
         if Path(file).suffix != ".pdb":
@@ -21,7 +24,8 @@ class PDBFile(Path):
 
 
 class FBDBFile(Path):
-    _flavour = type(Path())._flavour  # type: ignore[attr-defined]
+    if sys.version_info < (3, 12):  # Path cannot be subclassed directly before 3.12
+        _flavour = type(Path())._flavour  # type: ignore[attr-defined]
 
     def __new__(cls, file: Path | str) -> Self:
         if Path(file).suffix != ".fbdb":
