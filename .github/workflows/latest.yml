@@ -1,0 +1,36 @@
+name: latest-deps
+
+# Detect breakage caused by new releases of dependencies.
+# Unlike unittest.yml, this job ignores constraints.txt and installs the latest versions.
+on:
+  schedule:
+    - cron: "0 0 * * 1" # every Monday 00:00 UTC
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.x"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Show installed versions
+        run: pip list
+
+      - name: Type check
+        run: mypy --strict -p libcoffee --explicit-package-bases
+
+      - name: Unittest
+        run: python -m pytest .
