@@ -168,7 +168,8 @@ class MolBase(ABC):
         Returns the center of the molecule.
         If only_heavy_atom is True, return the center of heavy atoms only.
         """
-        return np.mean(self.get_coordinates(only_heavy_atom), axis=0)  # type: ignore[no-any-return]
+        center: npt.NDArray[np.float64] = np.mean(self.get_coordinates(only_heavy_atom), axis=0)
+        return center
 
     @abstractmethod
     def merge(self: Self, mol: Any, aps: tuple[int, int] | None = None) -> MolBase:
