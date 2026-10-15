@@ -189,8 +189,13 @@ class _REstrettoConfig:
                     warnings.warn("LIGAND is not be stored in the config file.", RuntimeWarning)
                 elif k == "OUTPUT":
                     warnings.warn("OUTPUT is not be stored in the config file.", RuntimeWarning)
+                elif k in ("GRID_FOLDER", "REUSE_FRAG_GRID", "REORDER_LIGANDS", "ROTANGS"):
+                    warnings.warn(f"{k} is not supported and is ignored.", RuntimeWarning)
+                elif k == "LOG":
+                    ret.log = Path(v)
                 elif k == "NO_LOCAL_OPT":
-                    ret.no_local_opt = bool(v)
+                    # same interpretation as REstretto: anything other than "false" (case-insensitive) is True
+                    ret.no_local_opt = v.strip().lower() != "false"
                 elif k == "POSES_PER_LIG":
                     ret.poses_per_lig = int(v)
                 elif k == "POSE_RMSD":
