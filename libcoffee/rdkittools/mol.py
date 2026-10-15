@@ -52,6 +52,8 @@ class RDKitMol(MolBase):
 
     @property
     def name(self) -> str:
+        if not self._mol.HasProp("_Name"):
+            return ""
         return self._mol.GetProp("_Name")  # type: ignore[no-any-return]
 
     @name.setter
@@ -97,16 +99,14 @@ class RDKitMol(MolBase):
         params.numThreads = 50
         params.pruneRmsThresh = 0.1
         params.useRandomCoords = True
-        params.maxAttempts = 1000
+        params.maxIterations = 1000
 
-        count = 0
-        while count < 10:
+        # retry with different random seeds (up to 10 times) until conformers are generated
+        for _ in range(10):
             conformers = AllChem.EmbedMultipleConfs(self.raw_mol, numConfs=10, params=params)  # type: ignore[attr-defined]
-
-            if len(conformers) == 0:
-                count += 1
-                params.randomSeed += 1   
-            break
+            if len(conformers) > 0:
+                break
+            params.randomSeed += 1
 
         if len(conformers) == 0:
             raise ValueError(f"Failed to generate coordinates. {self.name}")
