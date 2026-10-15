@@ -22,3 +22,21 @@ jobs:
 
       - name: Unittest
         run: python -m pytest .
+
+  # Oldest supported Python and dependency versions, to catch use of APIs that are too new.
+  test-min:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install -e ".[dev]" -c constraints-min.txt
+
+      - name: Unittest
+        run: python -m pytest .

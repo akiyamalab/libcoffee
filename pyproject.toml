@@ -11,7 +11,7 @@ license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "Keisuke Yanagisawa", email = "yanagisawa@comp.isct.ac.jp" }]
 requires-python = ">=3.11"
-dependencies = ["openbabel-wheel", "rdkit", "numpy"]
+dependencies = ["openbabel-wheel", "rdkit>=2024.3.1", "numpy"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

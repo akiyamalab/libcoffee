@@ -1,0 +1,9 @@
+# Oldest supported versions, used by the "test-min" CI job.
+# Raise these together with the lower bounds in pyproject.toml.
+rdkit==2024.3.1
+numpy==1.26.4
+openbabel-wheel==3.1.1.23
+pytest==9.1.1
+mypy==2.4.0
+isort==9.0.2
+rdkit-stubs==0.8
