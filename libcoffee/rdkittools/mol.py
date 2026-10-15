@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +10,41 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 
 from libcoffee.core.molbase import MolBase
+from libcoffee.rdkittools.aromatic_nh import AromaticNHAddedWarning, add_missing_aromatic_nh
+
+
+def _fix_aromatic_nh(raw_mol: Chem.Mol) -> Chem.Mol:
+    """
+    add_missing_aromatic_nh with a warning.
+    """
+    mol, added = add_missing_aromatic_nh(raw_mol)
+    warnings.warn(f"Hydrogens were added to aromatic nitrogens {added}", AromaticNHAddedWarning, stacklevel=3)
+    return mol
+
+
+def _postprocess_after_sanitization(mol: Chem.Mol) -> Chem.Mol:
+    """
+    Does what the RDKit SMILES/molfile parsers do after sanitization: assigns stereochemistry and removes Hs.
+    """
+    if mol.GetNumConformers() and mol.GetConformer().Is3D():
+        Chem.AssignStereochemistryFrom3D(mol)
+    else:
+        if mol.GetNumConformers():
+            Chem.AssignChiralTypesFromBondDirs(mol)
+        Chem.AssignStereochemistry(mol, cleanIt=True, force=True)
+    return Chem.RemoveHs(mol)
+
+
+def _parse_sdf_record_without_sanitization(text: str) -> Chem.Mol:
+    """
+    Parses one SDF record without sanitization. SDMolSupplier keeps its data fields unlike Chem.MolFromMolBlock.
+    """
+    supplier = Chem.SDMolSupplier()
+    supplier.SetData(text, sanitize=False, removeHs=False)
+    mol = next(supplier)
+    if mol is None:
+        raise ValueError("Failed to parse an SDF record")
+    return mol
 
 
 class RDKitMol(MolBase):
@@ -154,15 +190,36 @@ class RDKitMol(MolBase):
 
     @classmethod
     def from_smiles(cls, smiles: str) -> RDKitMol:
+        """
+        Creates a molecule from a SMILES string.
+        Missing hydrogens on aromatic nitrogens are added with an AromaticNHAddedWarning (see add_missing_aromatic_nh).
+        """
         mol = Chem.MolFromSmiles(smiles)
         if mol is None:
-            raise ValueError(f"Failed to generate a molecule from SMILES: {smiles}")
+            raw_mol = Chem.MolFromSmiles(smiles, sanitize=False)
+            if raw_mol is None:
+                raise ValueError(f"Failed to generate a molecule from SMILES: {smiles}")
+            mol = _postprocess_after_sanitization(_fix_aromatic_nh(raw_mol))
         return RDKitMol(mol)
 
     @classmethod
     def read_sdf(cls, file_path: Path) -> tuple[RDKitMol, ...]:
+        """
+        Reads molecules from an SDF file. Molecules that cannot be read are skipped with a warning.
+        Missing hydrogens on aromatic nitrogens are added with an AromaticNHAddedWarning (see add_missing_aromatic_nh).
+        """
         suppl = Chem.SDMolSupplier(str(file_path))
-        return tuple(RDKitMol(m) for m in suppl if m is not None)
+        mols: list[RDKitMol] = []
+        for i, mol in enumerate(suppl):
+            if mol is None:
+                try:
+                    raw_mol = _parse_sdf_record_without_sanitization(suppl.GetItemText(i))
+                    mol = _postprocess_after_sanitization(_fix_aromatic_nh(raw_mol))
+                except ValueError:
+                    warnings.warn(f"molecule #{i} was skipped", stacklevel=2)
+                    continue
+            mols.append(RDKitMol(mol))
+        return tuple(mols)
 
     @classmethod
     def write_sdf(cls, file_path: Path, mols: tuple[MolBase, ...]) -> None:
